@@ -1,0 +1,107 @@
+//
+//  EOScene.h
+//  EarthObservatory
+//
+//  Created by Kevin Cox on 11/23/11.
+//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
+//
+
+#ifndef EarthObservatory_EOScene_h
+#define EarthObservatory_EOScene_h
+
+#ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
+#define DEBUG
+#endif
+
+#include "EOGL.h"
+
+// C++ Std Includes
+#include <iostream>
+#include <cmath>
+#include <vector>
+
+
+// Class Includes
+#include "EOAxis.h"
+#include "EOPlanetaryObject.h"
+#include "EOEarth.h"
+#include "EOMoon.h"
+#include "EOLight.h"
+#include "EOCamera.h"
+
+// Third Party Camera
+//#include "camera.h"
+
+// Other Includes
+#include "EOGlobalEnums.h"
+
+using namespace std;
+
+
+
+class EOScene
+{
+public:
+    
+    EOScene();
+    ~EOScene();
+    
+    // Accessor Methods
+    RenderModes GetRenderMode(void);
+    GLboolean GetShowAxes(void);
+    GLboolean GetCurrentlyAnimating(void);
+    
+    // Mutator Methods
+    void SetRenderMode(RenderModes renderMode);
+    void SetShowAxes(GLboolean show);
+    void SetCurrentlyAnimating(GLboolean animating);
+    
+    // Other Methods
+    void RenderScene(void);
+    void UpdateScene(void);
+    void InitializeScene(void);
+    void HandleKeyboardInput(unsigned char key);
+    
+private:
+    
+    // Data Members
+    // Scene Objects
+    EOPlanetaryObject* earth;   // The Earth
+    EOPlanetaryObject* moon;    // The Moon
+    
+    // TODO: Implement All Planetary Objects in an array
+    //vector<EOPlanetaryObject*> planetaryObjects;    // List of Planetary Objects to Render
+    
+    
+    // Lighting Objects
+    EOLight* ambientLight;      // Scene Ambient Lighting
+    
+    
+    // Camera Objects
+    CameraModes currentMode;
+    
+    // Render Mode
+    RenderModes m_renderMode;     // Render the scene in wireframe or solids
+    
+    // Animating Mode
+    GLboolean m_currentlyAnimating;
+    
+    GLboolean showAxes;     // Whether or not to show the coordinate system axis
+    EOAxis* axes;           // Pointer to the instansiated axes class
+    
+    
+    GLfloat ambientLightColor[4] = {0.50, 0.50, 0.50, 1.0};
+    
+    GLfloat specularLightColor[4] = {1.0, 1.0, 1.0, 1.0};
+    
+    
+    GLfloat light1Position[4] = {0.0, 0.0, 10.0, 1.0 };
+    
+    
+    //CCamera sceneCamera;
+    EOCamera* sceneCamera;
+        
+};
+
+
+#endif
