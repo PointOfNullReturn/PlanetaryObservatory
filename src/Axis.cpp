@@ -1,5 +1,5 @@
 //
-//  EOAxis.cpp
+//  Axis.cpp
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/19/11.
@@ -8,7 +8,7 @@
 
 
 // Class Includes
-#include "EOAxis.h"
+#include "Axis.h"
 
 #include <algorithm>
 
@@ -45,59 +45,59 @@ namespace
     }
 }
 
-EOAxis::EOAxis(void)
+Axis::Axis()
 {
     axesLength = 10.0;      // By Default, the axes length will be 10.0
     axesLineWidth = 2.0;    // By Default, the axes line width will be 2.0
     enableAxes = false;     // By Default, don't render the axes
 }
 
-EOAxis::EOAxis(GLdouble length, GLdouble lineWidth, GLboolean showAxes)
+Axis::Axis(GLdouble length, GLdouble lineWidth, GLboolean showAxes)
 {
     axesLength = length;
     axesLineWidth = lineWidth;
     enableAxes = showAxes;
 }
 
-EOAxis::~EOAxis(void)
+Axis::~Axis()
 {
     
 }
 
 // Accessor Methods
-GLboolean EOAxis::GetEnableAxes(void)
+GLboolean Axis::GetEnableAxes(void)
 {
     return enableAxes;
 }
 
-GLdouble EOAxis::GetAxesLineWidth(void)
+GLdouble Axis::GetAxesLineWidth(void)
 {
     return axesLineWidth;    
 }
 
-GLdouble EOAxis::GetAxesLength(void)
+GLdouble Axis::GetAxesLength(void)
 {
     return axesLength;
 }
 
 // Mutator Methods
-void EOAxis::SetEnableAxes(GLboolean showAxes)
+void Axis::SetEnableAxes(GLboolean showAxes)
 {
     enableAxes = showAxes;
 }
 
-void EOAxis::SetAxesLineWidth(GLdouble width)
+void Axis::SetAxesLineWidth(GLdouble width)
 {
     axesLineWidth = width;
 }
 
-void EOAxis::SetAxesLength(GLdouble length)
+void Axis::SetAxesLength(GLdouble length)
 {
     axesLength = length;
 }
 
 // Other Methods
-void EOAxis::Render(void)
+void Axis::Render(void)
 {
     // Push All Attribute Bits
     glPushAttrib(GL_ALL_ATTRIB_BITS);

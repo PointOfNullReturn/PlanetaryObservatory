@@ -1,13 +1,13 @@
 //
-//  EOLight.h
+//  Light.h
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/25/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef EarthObservatory_EOLight_h
-#define EarthObservatory_EOLight_h
+#ifndef PLANETARYOBSERVATORY_LIGHT_H
+#define PLANETARYOBSERVATORY_LIGHT_H
 
 #ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
 #define DEBUG
@@ -22,11 +22,11 @@
 // Other Includes
 #include "EOGlobalEnums.h"
 
-class EOLight
+class Light
 {
 public:
-    EOLight(std::string lightName, GLenum lightID);
-    ~EOLight();
+    Light(std::string lightName, GLenum lightID);
+    ~Light();
     
     // Accessor Methods
     GLboolean GetLightEnabled(void);
@@ -54,4 +54,4 @@ private:
 
 
 
-#endif
+#endif // PLANETARYOBSERVATORY_LIGHT_H

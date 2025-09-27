@@ -1,13 +1,13 @@
 //
-//  EOScene.h
+//  Scene.h
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/23/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef EarthObservatory_EOScene_h
-#define EarthObservatory_EOScene_h
+#ifndef PLANETARYOBSERVATORY_SCENE_H
+#define PLANETARYOBSERVATORY_SCENE_H
 
 #ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
 #define DEBUG
@@ -22,12 +22,12 @@
 
 
 // Class Includes
-#include "EOAxis.h"
-#include "EOPlanetaryObject.h"
-#include "EOEarth.h"
-#include "EOMoon.h"
-#include "EOLight.h"
-#include "EOCamera.h"
+#include "Axis.h"
+#include "PlanetaryObject.h"
+#include "Earth.h"
+#include "Moon.h"
+#include "Light.h"
+#include "OrbitCamera.h"
 
 // Third Party Camera
 //#include "camera.h"
@@ -39,12 +39,12 @@ using namespace std;
 
 
 
-class EOScene
+class Scene
 {
 public:
     
-    EOScene();
-    ~EOScene();
+    Scene();
+    ~Scene();
     
     // Accessor Methods
     RenderModes GetRenderMode(void);
@@ -66,15 +66,15 @@ private:
     
     // Data Members
     // Scene Objects
-    EOPlanetaryObject* earth;   // The Earth
-    EOPlanetaryObject* moon;    // The Moon
+    PlanetaryObject* earth;   // The Earth
+    PlanetaryObject* moon;    // The Moon
     
     // TODO: Implement All Planetary Objects in an array
-    //vector<EOPlanetaryObject*> planetaryObjects;    // List of Planetary Objects to Render
+    //vector<PlanetaryObject*> planetaryObjects;    // List of Planetary Objects to Render
     
     
     // Lighting Objects
-    EOLight* ambientLight;      // Scene Ambient Lighting
+    Light* ambientLight;      // Scene Ambient Lighting
     
     
     // Camera Objects
@@ -87,7 +87,7 @@ private:
     GLboolean m_currentlyAnimating;
     
     GLboolean showAxes;     // Whether or not to show the coordinate system axis
-    EOAxis* axes;           // Pointer to the instansiated axes class
+    Axis* axes;           // Pointer to the instansiated axes class
     
     
     GLfloat ambientLightColor[4] = {0.50, 0.50, 0.50, 1.0};
@@ -99,9 +99,9 @@ private:
     
     
     //CCamera sceneCamera;
-    EOCamera* sceneCamera;
+    OrbitCamera* sceneCamera;
         
 };
 
 
-#endif
+#endif // PLANETARYOBSERVATORY_SCENE_H

@@ -15,13 +15,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(PLANETARY_OBSERVATORY_SOURCES
-    src/EOAxis.cpp
-    src/EOCamera.cpp
-    src/EOEarth.cpp
-    src/EOLight.cpp
-    src/EOMoon.cpp
-    src/EOPlanetaryObject.cpp
-    src/EOScene.cpp
+    src/Axis.cpp
+    src/OrbitCamera.cpp
+    src/Earth.cpp
+    src/Light.cpp
+    src/Moon.cpp
+    src/PlanetaryObject.cpp
+    src/Scene.cpp
+    src/core/Application.cpp
+    src/layers/SceneLayer.cpp
     src/TextureLoader.cpp
     src/astromathlib.cpp
     src/camera.cpp

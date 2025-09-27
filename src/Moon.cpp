@@ -1,16 +1,16 @@
 //
-//  EOMoon.cpp
+//  Moon.cpp
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/27/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "EOMoon.h"
+#include "Moon.h"
 #include "TextureLoader.h"
 
 // Constructors
-EOMoon::EOMoon(std::string objectName) : EOPlanetaryObject(objectName)
+Moon::Moon(std::string objectName) : PlanetaryObject(objectName)
 {
 
     
@@ -26,13 +26,13 @@ EOMoon::EOMoon(std::string objectName) : EOPlanetaryObject(objectName)
 }
 
 
-EOMoon::~EOMoon(void)
+Moon::~Moon()
 {
     
 }
 
 
-void  EOMoon::InitializeObject(void)
+void  Moon::InitializeObject(void)
 {
     SetObjectRadius(0.50);
     SetObjectAxisTilt(0.0);
@@ -51,7 +51,7 @@ void  EOMoon::InitializeObject(void)
 }
 
 
-void EOMoon::UpdateObject(void)
+void Moon::UpdateObject(void)
 {
     // For Animation Purposes
     
@@ -78,7 +78,7 @@ void EOMoon::UpdateObject(void)
 }
 
 
-void EOMoon::RenderObject(RenderModes renderMode)
+void Moon::RenderObject(RenderModes renderMode)
 {
     
     // Push All Attribute Bits
@@ -158,7 +158,7 @@ void EOMoon::RenderObject(RenderModes renderMode)
 
 
 
-void  EOMoon::InitializeMaterials(void)
+void  Moon::InitializeMaterials(void)
 {
     GLfloat moon_material_ambient[] = {0.50f, 0.50f, 0.50f, 1.0f};
     GLfloat moon_material_diffused[] = {0.75f, 0.75f, 0.75f, 1.0f};
@@ -174,7 +174,7 @@ void  EOMoon::InitializeMaterials(void)
 
 
 
-GLboolean EOMoon::LoadTextures(void)
+GLboolean Moon::LoadTextures(void)
 {
     texture = LoadTexture2D("assets/textures/moon_sm.bmp", true, false);
     return texture > 0;

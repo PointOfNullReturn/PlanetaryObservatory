@@ -1,13 +1,13 @@
 //
-//  EOPlanetaryObject.h
+//  PlanetaryObject.h
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/19/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef EarthObservatory_EOObject_h
-#define EarthObservatory_EOObject_h
+#ifndef PLANETARYOBSERVATORY_PLANETARYOBJECT_H
+#define PLANETARYOBSERVATORY_PLANETARYOBJECT_H
 
 #ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
 #define DEBUG
@@ -27,15 +27,15 @@
 // AstroMath Library
 #include "astromathlib.h"
 
-class EOPlanetaryObject
+class PlanetaryObject
 {
 public:
     
     // Constructor
-    explicit EOPlanetaryObject(std::string objectName);
+    explicit PlanetaryObject(std::string objectName);
     
     // Destructor
-    virtual ~EOPlanetaryObject() = default;
+    virtual ~PlanetaryObject() = default;
     
     // Accessor Methods
     GLdouble GetMass();
@@ -79,4 +79,4 @@ private:
 };
 
 
-#endif
+#endif // PLANETARYOBSERVATORY_PLANETARYOBJECT_H

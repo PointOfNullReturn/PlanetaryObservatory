@@ -1,15 +1,15 @@
 //
-//  EOCamera.cpp
+//  OrbitCamera.cpp
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/22/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "EOCamera.h"
+#include "OrbitCamera.h"
 #include <algorithm>
 
-EOCamera::EOCamera(void)
+OrbitCamera::OrbitCamera()
 {
     // Orbit Mode
     m_cameraMode = CAMERA_ORBIT;
@@ -32,14 +32,14 @@ EOCamera::EOCamera(void)
 }
 
 
-EOCamera::EOCamera(GLdouble position, GLdouble lookAt, GLdouble normal)
+OrbitCamera::OrbitCamera(GLdouble position, GLdouble lookAt, GLdouble normal)
 {
 
 
 }
 
 
-void EOCamera::Render(void)
+void OrbitCamera::Render(void)
 {
     gluLookAt(m_cameraPositionX, m_cameraPositionY, m_cameraPositionZ,
               m_cameraLookAtPositionX, m_cameraLookAtPositionY, m_cameraLookAtPositionZ,
@@ -47,27 +47,27 @@ void EOCamera::Render(void)
 
 }
 
-void EOCamera::OrbitLeft(void)
+void OrbitCamera::OrbitLeft(void)
 {
 
 }
 
-void EOCamera::OrbitRight(void)
+void OrbitCamera::OrbitRight(void)
 {
 
 }
 
-void EOCamera::OrbitUp(void)
+void OrbitCamera::OrbitUp(void)
 {
 
 }
 
-void EOCamera::OrbitDown(void)
+void OrbitCamera::OrbitDown(void)
 {
 
 }
 
-void EOCamera::ZoomIn(void)
+void OrbitCamera::ZoomIn(void)
 {
     if (!(m_cameraRadius <= MIN_CAMERA_RADIUS))
     {
@@ -78,7 +78,7 @@ void EOCamera::ZoomIn(void)
 
 }
 
-void EOCamera::ZoomOut(void)
+void OrbitCamera::ZoomOut(void)
 {
     if (!(m_cameraRadius >= MAX_CAMERA_RADIUS))
     {
@@ -88,13 +88,13 @@ void EOCamera::ZoomOut(void)
     }
 }
 
-void EOCamera::ChangeLookAt(void)
+void OrbitCamera::ChangeLookAt(void)
 {
 
 }
 
 
-void EOCamera::CalculatePosition(void)
+void OrbitCamera::CalculatePosition(void)
 {
     const GLdouble degToRad = 3.14159265358979323846 / 180.0;
     const GLdouble yaw = m_cameraOrbitAngle * degToRad;
@@ -110,13 +110,13 @@ void EOCamera::CalculatePosition(void)
     m_cameraPositionZ = static_cast<GLfloat>(m_cameraRadius * cosPitch * sinYaw);
 }
 
-void EOCamera::SetRadius(GLfloat radius)
+void OrbitCamera::SetRadius(GLfloat radius)
 {
     m_cameraRadius = std::clamp(radius, MIN_CAMERA_RADIUS, MAX_CAMERA_RADIUS);
     CalculatePosition();
 }
 
-void EOCamera::SnapToPreset(int presetIndex)
+void OrbitCamera::SnapToPreset(int presetIndex)
 {
     switch (presetIndex)
     {
@@ -168,7 +168,7 @@ void EOCamera::SnapToPreset(int presetIndex)
     CalculatePosition();
 }
 
-GLfloat EOCamera::GetRadius(void) const
+GLfloat OrbitCamera::GetRadius(void) const
 {
     return m_cameraRadius;
 }

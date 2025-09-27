@@ -1,13 +1,13 @@
 //
-//  EOAxis.h
+//  Axis.h
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/19/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef EarthObservatory_EOAxis_h
-#define EarthObservatory_EOAxis_h
+#ifndef PLANETARYOBSERVATORY_AXIS_H
+#define PLANETARYOBSERVATORY_AXIS_H
 
 
 #ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
@@ -20,12 +20,12 @@
 #include <iostream>
 #include <cmath>
 
-class EOAxis
+class Axis
 {
 public:
-    EOAxis(void);
-    EOAxis(GLdouble axesLength, GLdouble lineWidth, GLboolean showAxes); 
-    ~EOAxis(void);
+    Axis();
+    Axis(GLdouble axesLength, GLdouble lineWidth, GLboolean showAxes);
+    ~Axis();
     
     // Accessor Methods
     GLboolean GetEnableAxes(void);
@@ -50,4 +50,4 @@ private:
 };
 
 
-#endif
+#endif // PLANETARYOBSERVATORY_AXIS_H

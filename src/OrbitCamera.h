@@ -1,13 +1,13 @@
 //
-//  EOCamera.h
+//  OrbitCamera.h
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/22/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef EarthObservatory_EOCamera_h
-#define EarthObservatory_EOCamera_h
+#ifndef PLANETARYOBSERVATORY_ORBITCAMERA_H
+#define PLANETARYOBSERVATORY_ORBITCAMERA_H
 
 #ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
 #define DEBUG
@@ -25,17 +25,17 @@
 static const GLfloat MIN_CAMERA_RADIUS = 2.0f;
 static const GLfloat MAX_CAMERA_RADIUS = 38.0f;
 
-class EOCamera 
+class OrbitCamera
 {
 public:
     // Default Camera Constructor
     // 
-    EOCamera(void);
+    OrbitCamera();
     
     // Specific Constructor
-    EOCamera(GLdouble position, GLdouble lookAt, GLdouble normal);
+    OrbitCamera(GLdouble position, GLdouble lookAt, GLdouble normal);
     
-    ~EOCamera(void);
+    ~OrbitCamera();
 
     
     // Accessor Methods
@@ -96,4 +96,4 @@ private:
     
 };
 
-#endif
+#endif // PLANETARYOBSERVATORY_ORBITCAMERA_H

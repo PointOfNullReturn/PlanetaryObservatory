@@ -1,16 +1,16 @@
 //
-//  EOEarth.cpp
+//  Earth.cpp
 //  EarthObservatory
 //
 //  Created by Cox, Kevin on 11/24/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "EOEarth.h"
+#include "Earth.h"
 #include "TextureLoader.h"
 
 // Constructors
-EOEarth::EOEarth(std::string objectName) : EOPlanetaryObject(objectName)
+Earth::Earth(std::string objectName) : PlanetaryObject(objectName)
 {
     InitializeObject();
     InitializeMaterials();
@@ -26,31 +26,32 @@ EOEarth::EOEarth(std::string objectName) : EOPlanetaryObject(objectName)
 }
 
 
-EOEarth::~EOEarth(void)
+Earth::~Earth()
 {
     gluDeleteQuadric(earth);
 }
 
 
-void  EOEarth::InitializeObject(void)
+void  Earth::InitializeObject(void)
 {
     SetObjectRadius(ASTRO_MATH_LIB::KMtoGU(EARTH_RADIUS_KM));
     SetObjectAxisTilt(23.44);
 }
 
 
-void EOEarth::UpdateObject(void)
+void Earth::UpdateObject(void)
 {
     // Advance the planet's axial rotation when animation is enabled.
-    m_rotationAngle += 0.05f;
-    if (m_rotationAngle >= 360.0f)
+    constexpr float rotationSpeedDegreesPerFrame = 0.05f;
+    m_rotationAngle -= rotationSpeedDegreesPerFrame;
+    if (m_rotationAngle <= -360.0f)
     {
-        m_rotationAngle -= 360.0f;
+        m_rotationAngle += 360.0f;
     }
 }
 
 
-void EOEarth::RenderObject(RenderModes renderMode)
+void Earth::RenderObject(RenderModes renderMode)
 {
     // Push All Attribute Bits
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -125,7 +126,7 @@ void EOEarth::RenderObject(RenderModes renderMode)
 
 
 
-void  EOEarth::InitializeMaterials(void)
+void  Earth::InitializeMaterials(void)
 {
     GLfloat earth_material_ambient[] = {0.25f, 0.25f, 0.25f, 1.0f};
     GLfloat earth_material_diffused[] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -141,13 +142,10 @@ void  EOEarth::InitializeMaterials(void)
 
 
 
-GLboolean EOEarth::LoadTextures(void)
+GLboolean Earth::LoadTextures(void)
 {
-    texture = LoadTexture2D("assets/textures/earth_sm.bmp", true, false);
+    texture = LoadTexture2D("assets/textures/earth_sm.bmp", true, false, true);
     return texture > 0;
 }
-
-
-
 
 

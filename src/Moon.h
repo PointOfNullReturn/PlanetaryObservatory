@@ -1,13 +1,13 @@
 //
-//  EOMoon.h
+//  Moon.h
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/27/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef EarthObservatory_EOMoon_h
-#define EarthObservatory_EOMoon_h
+#ifndef PLANETARYOBSERVATORY_MOON_H
+#define PLANETARYOBSERVATORY_MOON_H
 
 #ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
 #define DEBUG
@@ -21,18 +21,18 @@
 
 
 // Class Includes
-#include "EOPlanetaryObject.h"
+#include "PlanetaryObject.h"
 
 // Sun Globals
 // Material Properties
 
 
-class EOMoon: public EOPlanetaryObject   
+class Moon : public PlanetaryObject
 {
 public:
     // Constructors
-    EOMoon(std::string objectName);
-    ~EOMoon(void);
+    Moon(std::string objectName);
+    ~Moon();
     
     // Accessors
     
@@ -69,4 +69,4 @@ private:
 };
 
 
-#endif
+#endif // PLANETARYOBSERVATORY_MOON_H

@@ -1,34 +1,34 @@
 //
-//  EOScene.cpp
+//  Scene.cpp
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/23/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "EOScene.h"
+#include "Scene.h"
 
 using namespace std;
 
 
 
-EOScene::EOScene()
+Scene::Scene()
 {
     
     // Instansiate the Earth Planetary Object
-    earth = new EOEarth("Earth");
+    earth = new Earth("Earth");
     
     // Instansiate the Moon Planetary Object
-    moon = new EOMoon("Moon");
+    moon = new Moon("Moon");
     
-    sceneCamera = new EOCamera();
+    sceneCamera = new OrbitCamera();
     
     //TODO: Finish Lighting Object
-    //ambientLight = new EOLight("LIGHT0", GL_LIGHT0);
+    //ambientLight = new Light("LIGHT0", GL_LIGHT0);
     InitializeScene();
     
     // This all needs to go in a scene init function.
-    axes = new EOAxis(10.0, 2.0, false);
+    axes = new Axis(10.0, 2.0, false);
     
     if (axes->GetEnableAxes())
         showAxes = true;
@@ -40,13 +40,13 @@ EOScene::EOScene()
 }
 
 
-EOScene::~EOScene()
+Scene::~Scene()
 {
     
 }
 
 
-void EOScene::InitializeScene(void)
+void Scene::InitializeScene(void)
 {
     // Initialize Background Color
     // Set Background Color to Black
@@ -88,40 +88,40 @@ void EOScene::InitializeScene(void)
 }
 
 // Accessor Methods
-RenderModes EOScene::GetRenderMode(void)
+RenderModes Scene::GetRenderMode(void)
 {
     return m_renderMode;
 }
 
-GLboolean EOScene::GetShowAxes(void)
+GLboolean Scene::GetShowAxes(void)
 {
     return showAxes;
 }
 
-GLboolean EOScene::GetCurrentlyAnimating(void)
+GLboolean Scene::GetCurrentlyAnimating(void)
 {
     return m_currentlyAnimating;
 }
 
 // Mutator Methods
-void EOScene::SetRenderMode(RenderModes renderMode)
+void Scene::SetRenderMode(RenderModes renderMode)
 {
     m_renderMode = renderMode;
 }
 
-void EOScene::SetShowAxes(GLboolean show)
+void Scene::SetShowAxes(GLboolean show)
 {
     showAxes = show;
     axes->SetEnableAxes(showAxes);
 }
 
-void EOScene::SetCurrentlyAnimating(GLboolean animating)
+void Scene::SetCurrentlyAnimating(GLboolean animating)
 {
     m_currentlyAnimating = animating;
 }
 
 // Other Methods
-void EOScene::RenderScene(void)
+void Scene::RenderScene(void)
 {
     // Clear the window and the depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -172,14 +172,14 @@ void EOScene::RenderScene(void)
 }
 
 
-void EOScene::UpdateScene(void)
+void Scene::UpdateScene(void)
 {
     // If currently animating, update all objects
     moon->UpdateObject();
     earth->UpdateObject();
 }
 
-void EOScene::HandleKeyboardInput(unsigned char key)
+void Scene::HandleKeyboardInput(unsigned char key)
 {
     switch (key) {
         
@@ -242,5 +242,3 @@ void EOScene::HandleKeyboardInput(unsigned char key)
 #endif
     }
 }
-
-

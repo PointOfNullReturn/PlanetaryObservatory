@@ -48,3 +48,6 @@
 
 # Local CMake build outputs
 /build/
+
+# Project documentation (managed locally)
+/docs/

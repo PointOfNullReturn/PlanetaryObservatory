@@ -1,13 +1,13 @@
 //
-//  EOEarth.h
+//  Earth.h
 //  EarthObservatory
 //
 //  Created by Cox, Kevin on 11/24/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef EarthObservatory_EOEarth_h
-#define EarthObservatory_EOEarth_h
+#ifndef PLANETARYOBSERVATORY_EARTH_H
+#define PLANETARYOBSERVATORY_EARTH_H
 
 #ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
 #define DEBUG
@@ -20,18 +20,18 @@
 #include <vector>
 
 // Class Includes
-#include "EOPlanetaryObject.h"
+#include "PlanetaryObject.h"
 
 // Sun Globals
 // Material Properties
 
 
-class EOEarth: public EOPlanetaryObject   
+class Earth : public PlanetaryObject
 {
 public:
     // Constructors
-    EOEarth(std::string objectName);
-    ~EOEarth(void);
+    Earth(std::string objectName);
+    ~Earth();
     
     // Accessors
     
@@ -58,4 +58,4 @@ private:
 };
 
 
-#endif
+#endif // PLANETARYOBSERVATORY_EARTH_H
