@@ -3,9 +3,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include <algorithm>
 #include <iostream>
 
-GLuint LoadTexture2D(const std::string& path, bool generateMipmaps, bool flipVertically)
+GLuint LoadTexture2D(const std::string& path,
+                     bool generateMipmaps,
+                     bool flipVertically,
+                     bool flipHorizontally)
 {
     stbi_set_flip_vertically_on_load(flipVertically ? 1 : 0);
 
@@ -21,6 +25,26 @@ GLuint LoadTexture2D(const std::string& path, bool generateMipmaps, bool flipVer
     }
 
     const GLenum format = GL_RGBA;
+
+    if (flipHorizontally)
+    {
+        const int bytesPerPixel = 4; // STBI_rgb_alpha forces 4 channels
+        const int rowStride = width * bytesPerPixel;
+
+        for (int y = 0; y < height; ++y)
+        {
+            stbi_uc* row = pixels + y * rowStride;
+            for (int x = 0; x < width / 2; ++x)
+            {
+                stbi_uc* left = row + x * bytesPerPixel;
+                stbi_uc* right = row + (width - 1 - x) * bytesPerPixel;
+                for (int channel = 0; channel < bytesPerPixel; ++channel)
+                {
+                    std::swap(left[channel], right[channel]);
+                }
+            }
+        }
+    }
 
     GLuint textureId = 0;
     glGenTextures(1, &textureId);
