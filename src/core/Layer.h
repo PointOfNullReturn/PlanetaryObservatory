@@ -8,7 +8,7 @@ class Layer
 public:
     virtual ~Layer() = default;
 
-    virtual void onAttach(Application& application) {}
+    virtual void onAttach([[maybe_unused]] Application& application) {}
     virtual void onDetach() {}
     virtual void onUpdate(double /*deltaTime*/) {}
     virtual void onRender() {}

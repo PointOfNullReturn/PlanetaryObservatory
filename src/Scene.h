@@ -61,11 +61,11 @@ private:
     
     
     // Lighting Objects
-    Light* ambientLight;      // Scene Ambient Lighting
+    [[maybe_unused]] Light* ambientLight;      // Scene Ambient Lighting
     
     
     // Camera Objects
-    CameraModes currentMode;
+    [[maybe_unused]] CameraModes currentMode;
     
     // Render Mode
     RenderModes m_renderMode;     // Render the scene in wireframe or solids

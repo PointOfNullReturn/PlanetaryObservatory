@@ -24,9 +24,6 @@ public:
     // 
     OrbitCamera();
     
-    // Specific Constructor
-    OrbitCamera(GLdouble position, GLdouble lookAt, GLdouble normal);
-    
     ~OrbitCamera();
 
     

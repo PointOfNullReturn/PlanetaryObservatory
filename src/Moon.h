@@ -56,11 +56,8 @@ private:
     GLfloat m_moonPositionY;
     GLfloat m_moonPositionZ;
     GLfloat m_moonCurrentOrbitalAngle;
-    GLfloat m_moonOrbitalInclination;
-    
     GLuint texture;
     GLUquadric *moon;
-    GLubyte *wmap;
     
 };
 

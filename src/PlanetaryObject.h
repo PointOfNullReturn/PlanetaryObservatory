@@ -66,7 +66,7 @@ private:
     GLdouble m_objectRotationalVelocity;  // The Object's Rotational Velocity
     GLdouble m_objectAxisTilt;            // The Object's Axis Tilt
     
-    positionalVector m_objectPosition;    // The Object's position in the scene
+    [[maybe_unused]] positionalVector m_objectPosition;    // The Object's position in the scene
     
 
     

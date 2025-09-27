@@ -34,13 +34,6 @@ OrbitCamera::OrbitCamera()
 }
 
 
-OrbitCamera::OrbitCamera(GLdouble position, GLdouble lookAt, GLdouble normal)
-{
-
-
-}
-
-
 void OrbitCamera::Render(void)
 {
     gluLookAt(m_cameraPositionX, m_cameraPositionY, m_cameraPositionZ,
