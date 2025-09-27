@@ -7,7 +7,9 @@
 //
 
 #include "OrbitCamera.h"
+
 #include <algorithm>
+#include <cmath>
 
 OrbitCamera::OrbitCamera()
 {

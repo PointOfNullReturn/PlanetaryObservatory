@@ -8,7 +8,7 @@
 
 #include "Scene.h"
 
-using namespace std;
+#include <iostream>
 
 
 
@@ -163,7 +163,7 @@ void Scene::RenderScene(void)
     if (axes->GetEnableAxes())
     {
         axes->SetAxesLength(sceneCamera->GetRadius());
-        cout << "Rendering Axes" << endl;
+        std::cout << "Rendering Axes" << std::endl;
         axes->Render();
         
     }

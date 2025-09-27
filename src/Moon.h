@@ -9,15 +9,11 @@
 #ifndef PLANETARYOBSERVATORY_MOON_H
 #define PLANETARYOBSERVATORY_MOON_H
 
-#ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
-#define DEBUG
-#endif
-
 #include "EOGL.h"
 
 // C++ Std Includes
-#include <iostream>
-#include <cmath>
+#include <string>
+#include <vector>
 
 
 // Class Includes

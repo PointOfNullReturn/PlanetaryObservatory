@@ -13,10 +13,6 @@
 #ifndef EarthObservatory_astromathlib_h
 #define EarthObservatory_astromathlib_h
 
-#ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
-#define DEBUG
-#endif
-
 #include "EOGL.h"
 
 #include <iostream>

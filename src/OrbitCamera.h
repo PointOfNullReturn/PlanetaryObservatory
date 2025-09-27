@@ -9,15 +9,7 @@
 #ifndef PLANETARYOBSERVATORY_ORBITCAMERA_H
 #define PLANETARYOBSERVATORY_ORBITCAMERA_H
 
-#ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
-#define DEBUG
-#endif
-
 #include "EOGL.h"
-
-// C++ Std Includes
-#include <iostream>
-#include <cmath>
 
 // Globals
 #include "EOGlobalEnums.h"

@@ -10,15 +10,7 @@
 #define PLANETARYOBSERVATORY_AXIS_H
 
 
-#ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
-#define DEBUG
-#endif
-
 #include "EOGL.h"
-
-// C++ Std Includes
-#include <iostream>
-#include <cmath>
 
 class Axis
 {

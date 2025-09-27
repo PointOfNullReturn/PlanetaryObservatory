@@ -9,15 +9,10 @@
 #ifndef PLANETARYOBSERVATORY_LIGHT_H
 #define PLANETARYOBSERVATORY_LIGHT_H
 
-#ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
-#define DEBUG
-#endif
-
 #include "EOGL.h"
 
 // C++ Std Includes
-#include <iostream>
-#include <cmath>
+#include <string>
 
 // Other Includes
 #include "EOGlobalEnums.h"

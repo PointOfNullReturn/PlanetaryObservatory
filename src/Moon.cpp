@@ -9,6 +9,9 @@
 #include "Moon.h"
 #include "TextureLoader.h"
 
+#include <cmath>
+#include <iostream>
+
 // Constructors
 Moon::Moon(std::string objectName) : PlanetaryObject(objectName)
 {

@@ -9,16 +9,7 @@
 #ifndef PLANETARYOBSERVATORY_SCENE_H
 #define PLANETARYOBSERVATORY_SCENE_H
 
-#ifndef DEBUG   // For debug output, by default DEBUG is already enabled in XCode
-#define DEBUG
-#endif
-
 #include "EOGL.h"
-
-// C++ Std Includes
-#include <iostream>
-#include <cmath>
-#include <vector>
 
 
 // Class Includes
@@ -34,10 +25,6 @@
 
 // Other Includes
 #include "EOGlobalEnums.h"
-
-using namespace std;
-
-
 
 class Scene
 {
