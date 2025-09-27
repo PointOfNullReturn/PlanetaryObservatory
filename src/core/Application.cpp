@@ -2,22 +2,22 @@
 
 #include "core/Layer.h"
 #include "EOGlobals.h"
+#include "utils/Log.h"
 
 #include <GLFW/glfw3.h>
 
 #include <algorithm>
 #include <cstdlib>
-#include <iostream>
 #include <stdexcept>
 #include <utility>
+#include <string>
 
 namespace
 {
 void errorCallback(int error, const char* description)
 {
-    std::cerr << "GLFW error " << error << ": "
-              << (description != nullptr ? description : "<no description>")
-              << std::endl;
+    Log::error(std::string("GLFW error ") + std::to_string(error) + ": " +
+               (description != nullptr ? description : "<no description>"));
 }
 
 } // namespace

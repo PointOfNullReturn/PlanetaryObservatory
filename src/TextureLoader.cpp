@@ -3,8 +3,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include "utils/Log.h"
+
 #include <algorithm>
-#include <iostream>
+#include <string>
 
 GLuint LoadTexture2D(const std::string& path,
                      bool generateMipmaps,
@@ -20,7 +22,7 @@ GLuint LoadTexture2D(const std::string& path,
 
     if (!pixels)
     {
-        std::cerr << "Failed to load texture: " << path << std::endl;
+        Log::error(std::string("Failed to load texture: ") + path);
         return 0;
     }
 
@@ -68,7 +70,10 @@ GLuint LoadTexture2D(const std::string& path,
 
     stbi_image_free(pixels);
 
-    std::cout << "Loaded texture " << path << " (" << width << "x" << height << ", channels: " << channels << ") id=" << textureId << std::endl;
+    Log::debug(std::string("Loaded texture ") + path + " (" +
+               std::to_string(width) + "x" + std::to_string(height) +
+               ", channels: " + std::to_string(channels) + ") id=" +
+               std::to_string(textureId));
 
     return textureId;
 }

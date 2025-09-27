@@ -12,6 +12,8 @@
 
 #include "astromathlib.h"
 
+#include "utils/Log.h"
+
 // Convert Kilometers to Astronomical Units (1 AU = 149,597,870.7 km)
 GLdouble ASTRO_MATH_LIB::KMtoGU(GLdouble kilometers)
 {
@@ -23,5 +25,5 @@ GLdouble ASTRO_MATH_LIB::KMtoGU(GLdouble kilometers)
 
 void ASTRO_MATH_LIB::test(void)
 {
-    std::cout << "Test of Astro math Lib" << std::endl;
+    Log::debug("Test of Astro math Lib");
 }

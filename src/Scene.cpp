@@ -8,7 +8,9 @@
 
 #include "Scene.h"
 
-#include <iostream>
+#include "utils/Log.h"
+
+#include <string>
 
 
 
@@ -163,7 +165,7 @@ void Scene::RenderScene(void)
     if (axes->GetEnableAxes())
     {
         axes->SetAxesLength(sceneCamera->GetRadius());
-        std::cout << "Rendering Axes" << std::endl;
+        Log::debug("Rendering axes");
         axes->Render();
         
     }
@@ -236,9 +238,11 @@ void Scene::HandleKeyboardInput(unsigned char key)
             sceneCamera->ZoomOut();
             break;
         default:
-#ifdef DEBUG
-            std::cout << "Unhandled Keyboard Key: " << key << std::endl;
+            if (Log::kDebugLoggingEnabled)
+            {
+                Log::debug(std::string("Unhandled Keyboard Key: ") +
+                           static_cast<char>(key));
+            }
             break;
-#endif
     }
 }

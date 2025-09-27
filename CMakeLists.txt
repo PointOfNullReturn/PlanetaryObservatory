@@ -22,6 +22,7 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/Moon.cpp
     src/PlanetaryObject.cpp
     src/Scene.cpp
+    src/utils/Log.cpp
     src/core/Application.cpp
     src/layers/SceneLayer.cpp
     src/TextureLoader.cpp

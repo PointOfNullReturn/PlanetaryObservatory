@@ -1,10 +1,11 @@
 #include "core/Application.h"
 #include "layers/SceneLayer.h"
+#include "utils/Log.h"
 
 #include <cstdlib>
 #include <exception>
-#include <iostream>
 #include <memory>
+#include <string>
 
 int main()
 {
@@ -16,11 +17,11 @@ int main()
     }
     catch (const std::exception& ex)
     {
-        std::cerr << "Fatal error: " << ex.what() << std::endl;
+        Log::error(std::string("Fatal error: ") + ex.what());
     }
     catch (...)
     {
-        std::cerr << "Fatal error: unknown exception" << std::endl;
+        Log::error("Fatal error: unknown exception");
     }
 
     return EXIT_FAILURE;
