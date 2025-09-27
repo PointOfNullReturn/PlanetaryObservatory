@@ -51,3 +51,6 @@
 
 # Project documentation (managed locally)
 /docs/
+
+# Generated agent notes
+/AGENTS.md
