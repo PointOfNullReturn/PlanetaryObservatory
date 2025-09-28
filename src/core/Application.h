@@ -61,6 +61,7 @@ private:
 public:
   void toggleFpsDisplay();
   bool isFpsDisplayed() const { return m_displayFps; }
+  double lastFps() const { return m_lastFps; }
 
   /// Toggles between play and edit modes, affecting ImGui and input routing.
   void toggleEditMode();

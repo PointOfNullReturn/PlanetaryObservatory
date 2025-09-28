@@ -197,11 +197,7 @@ void Application::updateFps(double deltaTime) {
     m_fpsAccumulator = 0.0;
     m_fpsFrameCount = 0;
 
-    std::ostringstream title;
-    title.setf(std::ios::fixed);
-    title.precision(1);
-    title << m_windowTitleBase << " | FPS: " << fps;
-    glfwSetWindowTitle(m_window, title.str().c_str());
+    m_lastFps = fps;
   }
 }
 
@@ -212,11 +208,6 @@ void Application::toggleFpsDisplay() {
     m_fpsAccumulator = 0.0;
     m_fpsFrameCount = 0;
     m_lastFps = 0.0;
-    if (m_window != nullptr) {
-      glfwSetWindowTitle(m_window, m_windowTitleBase.c_str());
-    }
-  } else if (m_window != nullptr) {
-    glfwSetWindowTitle(m_window, (m_windowTitleBase + " | FPS: --").c_str());
   }
 }
 

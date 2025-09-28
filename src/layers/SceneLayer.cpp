@@ -48,7 +48,7 @@ void SceneLayer::onAttach(Application &application) {
 }
 
 void SceneLayer::onDetach() {
-  if (m_sceneGraph) {
+    if (m_sceneGraph) {
     m_sceneGraph->detach();
   }
   m_scene.reset();
@@ -61,7 +61,7 @@ void SceneLayer::onUpdate(double deltaTime) {
     return;
   }
 
-  if (m_sceneGraph) {
+    if (m_sceneGraph) {
     m_sceneGraph->update(deltaTime);
   }
 
@@ -82,7 +82,7 @@ void SceneLayer::onRender() {
 
   m_scene->RenderScene();
 
-  if (m_sceneGraph) {
+    if (m_sceneGraph) {
     m_sceneGraph->render();
   }
 
@@ -199,14 +199,18 @@ void SceneLayer::onImGuiRender() {
 
     if (m_scene) {
       ImGui::SeparatorText("Scene");
-    ImGui::Text("Animating: %s",
-                m_scene->GetCurrentlyAnimating() ? "Yes" : "No");
-    ImGui::Text("Axes: %s", m_scene->GetShowAxes() ? "On" : "Off");
-    const auto &camera = m_scene->GetCamera();
-    ImGui::Text("Camera radius: %.2f", camera ? camera->GetRadius() : 0.0f);
-  }
+      ImGui::Text("Animating: %s",
+                  m_scene->GetCurrentlyAnimating() ? "Yes" : "No");
+      ImGui::Text("Axes: %s", m_scene->GetShowAxes() ? "On" : "Off");
+      const auto &camera = m_scene->GetCamera();
+      ImGui::Text("Camera radius: %.2f", camera ? camera->GetRadius() : 0.0f);
+    }
 
-  if (m_sceneGraph) {
+    if (m_application != nullptr && m_application->isFpsDisplayed()) {
+      ImGui::Text("FPS: %.1f", m_application->lastFps());
+    }
+
+      if (m_sceneGraph) {
     ImGui::SeparatorText("Hierarchy");
     auto drawNode = [&](auto &&self, SceneNode &node) -> void {
       const std::string &label = node.name().empty() ? "(unnamed)" : node.name();
