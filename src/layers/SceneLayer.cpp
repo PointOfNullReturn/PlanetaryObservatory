@@ -7,6 +7,7 @@
 #include "scene/Scene.h"
 #include "scenegraph/SceneGraph.h"
 #include "scenegraph/components/CameraComponent.h"
+#include "scenegraph/components/TransformComponent.h"
 #include "utils/Log.h"
 
 #include <GLFW/glfw3.h>
@@ -15,6 +16,10 @@
 #include <cctype>
 #include <memory>
 #include <string>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <imgui.h>
 
@@ -85,6 +90,15 @@ void SceneLayer::onRender() {
 
     if (m_sceneGraph) {
     m_sceneGraph->render();
+  }
+
+  if (Log::kDebugLoggingEnabled) {
+    Log::debug(std::string("Earth radius GU: ") +
+               std::to_string(ASTRO_MATH_LIB::KMtoGU(6371.0)));
+    Log::debug(std::string("Moon radius GU: ") +
+               std::to_string(ASTRO_MATH_LIB::KMtoGU(1737.1)));
+    Log::debug(std::string("Earth-Moon distance GU: ") +
+               std::to_string(ASTRO_MATH_LIB::KMtoGU(384000.0)));
   }
 
   if (m_application != nullptr &&
@@ -179,8 +193,8 @@ void SceneLayer::updateProjection(int width, int height) {
   glViewport(0, 0, width, height);
 
   glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(50.0, aspectRatio, 0.01, 50.0);
+  glm::mat4 projection = glm::perspective(glm::radians(50.0f), aspectRatio, 0.01f, 50.0f);
+  glLoadMatrixf(glm::value_ptr(projection));
   glMatrixMode(GL_MODELVIEW);
 }
 
@@ -266,12 +280,11 @@ void SceneLayer::onImGuiRender() {
       m_selectedNode->setName(nameBuffer.data());
     }
 
-    ImGui::DragFloat3("Position",
-                      m_selectedNode->transform().position, 0.05f);
-    ImGui::DragFloat3("Rotation",
-                      m_selectedNode->transform().rotation, 0.5f);
-    ImGui::DragFloat3("Scale", m_selectedNode->transform().scale, 0.05f,
-                      0.01f, 10.0f);
+    if (auto* transform = m_selectedNode->getComponent<TransformComponent>()) {
+        ImGui::DragFloat3("Position", &transform->position.x, 0.05f);
+        ImGui::DragFloat3("Rotation", &transform->rotation.x, 0.5f);
+        ImGui::DragFloat3("Scale", &transform->scale.x, 0.05f, 0.01f, 10.0f);
+    }
   }
 
   ImGui::SeparatorText("Controls");

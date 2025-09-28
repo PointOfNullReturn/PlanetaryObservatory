@@ -22,6 +22,9 @@
 
 #include <memory>
 
+#include "render/Skybox.h"
+#include <glm/glm.hpp>
+
 class Scene {
 public:
   Scene();
@@ -74,11 +77,11 @@ private:
   GLboolean showAxes; // Whether or not to show the coordinate system axis
   std::unique_ptr<Axis> axes; // Pointer to the instansiated axes class
 
-  GLfloat ambientLightColor[4] = {0.50, 0.50, 0.50, 1.0};
+  glm::vec4 ambientLightColor = {0.50, 0.50, 0.50, 1.0};
 
-  GLfloat specularLightColor[4] = {1.0, 1.0, 1.0, 1.0};
+  glm::vec4 specularLightColor = {1.0, 1.0, 1.0, 1.0};
 
-  GLfloat light1Position[4] = {0.0, 0.0, 10.0, 1.0};
+  glm::vec4 light1Position = {0.0, 0.0, 10.0, 1.0};
 
   std::shared_ptr<OrbitCamera> sceneCamera;
   std::unique_ptr<Skybox> skybox;

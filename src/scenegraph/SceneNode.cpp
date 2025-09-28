@@ -1,12 +1,16 @@
 #include "scenegraph/SceneNode.h"
+#include "scenegraph/components/TransformComponent.h"
 
-SceneNode::SceneNode() = default; // Transform already identity by default
+SceneNode::SceneNode() {
+    addComponent(std::make_unique<TransformComponent>());
+}
 
-SceneNode::SceneNode(const Transform &transform) : m_transform(transform) {}
-
-Transform &SceneNode::transform() { return m_transform; }
-
-const Transform &SceneNode::transform() const { return m_transform; }
+glm::mat4 SceneNode::getTransform() const {
+    if (auto* transformComponent = getComponent<TransformComponent>()) {
+        return transformComponent->getTransform();
+    }
+    return glm::mat4(1.0f);
+}
 
 SceneNode *SceneNode::parent() { return m_parent; }
 

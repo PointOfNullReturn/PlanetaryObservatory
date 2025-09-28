@@ -10,9 +10,8 @@
 #define PLANETARYOBSERVATORY_ORBITCAMERA_H
 
 #include "common/EOGL.h"
-
-// Globals
 #include "common/EOGlobalEnums.h"
+#include <glm/glm.hpp>
 
 static const GLfloat MIN_CAMERA_RADIUS = 2.0f;
 static const GLfloat MAX_CAMERA_RADIUS = 38.0f;
@@ -20,45 +19,26 @@ static const GLfloat MAX_CAMERA_RADIUS = 38.0f;
 class OrbitCamera
 {
 public:
-    // Default Camera Constructor
-    // 
     OrbitCamera();
-    
     ~OrbitCamera() = default;
 
-    
-    // Accessor Methods
-    
-    
-    
-    // Mutator Methods
     void ChangeLookAt(void);
 
     void SnapToPreset(int presetIndex);
     void SetRadius(GLfloat radius);
     GLfloat GetRadius(void) const;
 
-    // Other Methods
     void Render(void);
     
     void OrbitLeft(void);
-    
     void OrbitRight(void);
-    
     void OrbitUp(void);
-    
     void OrbitDown(void);
     
     void ZoomIn(void);
-    
     void ZoomOut(void);
     
-    
-    
-    
-    
 private:
-    
     CameraModes m_cameraMode;
     
     GLfloat m_cameraRadius;
@@ -66,23 +46,10 @@ private:
     GLfloat m_cameraOrbitAngle;
     GLfloat m_cameraPitchAngle;
     
-    GLfloat m_cameraPositionX;
-    GLfloat m_cameraPositionY;
-    GLfloat m_cameraPositionZ;
+    glm::vec3 m_cameraPosition;
+    glm::vec3 m_cameraLookAtPosition;
+    glm::vec3 m_cameraNormal;
     
-    GLfloat m_cameraLookAtPositionX;
-    GLfloat m_cameraLookAtPositionY;
-    GLfloat m_cameraLookAtPositionZ;
-    
-    GLfloat m_cameraNormalX;
-    GLfloat m_cameraNormalY;
-    GLfloat m_cameraNormalZ;
-    
-    // Methods
     void CalculatePosition(void);
-    
-    
-    
 };
-
 #endif // PLANETARYOBSERVATORY_ORBITCAMERA_H

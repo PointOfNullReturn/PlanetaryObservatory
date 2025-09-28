@@ -1,6 +1,7 @@
 #include "core/Application.h"
 #include "layers/SceneLayer.h"
 #include "utils/Log.h"
+#include "math/mathlib.h"
 
 #include <cstdlib>
 #include <exception>

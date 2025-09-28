@@ -1,31 +1,23 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include "scenegraph/components/Component.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-/// Represents a local transform for a scene node.
-struct Transform {
-  float position[3] = {0.0f, 0.0f, 0.0f};
-  float rotation[3] = {0.0f, 0.0f, 0.0f};
-  float scale[3] = {1.0f, 1.0f, 1.0f};
-};
+class TransformComponent;
 
 /// Basic node in the scene graph that owns children and a transform.
 class SceneNode {
 public:
   /// Constructs a node with identity transform.
   SceneNode();
-  /// Constructs a node with a custom transform.
-  explicit SceneNode(const Transform &transform);
   virtual ~SceneNode() = default;
 
-  /// Returns a mutable reference to the node transform.
-  Transform &transform();
-  /// Returns a read-only reference to the node transform.
-  const Transform &transform() const;
+  /// Returns the transform matrix for the node.
+  glm::mat4 getTransform() const;
 
   /// Returns the parent node or nullptr for the root.
   SceneNode *parent();
@@ -49,6 +41,16 @@ public:
   /// Returns the components attached to this node (const).
   const std::vector<std::unique_ptr<Component>> &components() const;
 
+  template <typename T>
+  T* getComponent() const {
+    for (const auto& component : m_components) {
+      if (auto* casted = dynamic_cast<T*>(component.get())) {
+        return casted;
+      }
+    }
+    return nullptr;
+  }
+
   /// Sets a tooling-friendly name for this node.
   void setName(std::string name);
   /// Returns the tooling/debug name of the node.
@@ -65,7 +67,6 @@ public:
   virtual void onRender();
 
 protected:
-  Transform m_transform;
   std::vector<std::unique_ptr<SceneNode>> m_children;
   SceneNode *m_parent = nullptr;
   std::string m_name;

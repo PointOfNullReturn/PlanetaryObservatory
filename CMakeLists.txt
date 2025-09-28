@@ -27,13 +27,13 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/scenegraph/SceneGraph.cpp
     src/scenegraph/SceneNode.cpp
     src/scenegraph/components/CameraComponent.cpp
+    src/scenegraph/components/TransformComponent.cpp
     src/scene/Earth.cpp
     src/scene/Light.cpp
     src/scene/Moon.cpp
     src/scene/PlanetaryObject.cpp
     src/scene/Scene.cpp
     src/math/astromathlib.cpp
-    src/math/mathlib.cpp
     src/utils/Log.cpp
     src/core/Application.cpp
     src/layers/SceneLayer.cpp

@@ -94,5 +94,17 @@ endif()
 
 list(APPEND _planetary_observatory_dep_link_libs imgui::backend)
 
+include(FetchContent)
+
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG 1.0.1
+)
+
+FetchContent_MakeAvailable(glm)
+
+list(APPEND _planetary_observatory_dep_include_dirs ${glm_SOURCE_DIR})
+
 set(PLANETARY_OBSERVATORY_DEP_INCLUDE_DIRS "${_planetary_observatory_dep_include_dirs}")
 set(PLANETARY_OBSERVATORY_DEP_LINK_LIBS "${_planetary_observatory_dep_link_libs}")

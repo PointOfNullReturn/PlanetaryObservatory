@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <string>
+#include <glm/gtc/type_ptr.hpp>
 
 Scene::Scene() {
 
@@ -73,10 +74,10 @@ void Scene::InitializeScene(void) {
 
   // Initialize Lighting
   // LIGHT_0 - Ambient Light
-  glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLightColor);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, glm::value_ptr(ambientLightColor));
 
   // LIGHT_1 - Specular Light
-  glLightfv(GL_LIGHT1, GL_SPECULAR, specularLightColor);
+  glLightfv(GL_LIGHT1, GL_SPECULAR, glm::value_ptr(specularLightColor));
 }
 
 // Accessor Methods
@@ -123,7 +124,7 @@ void Scene::RenderScene(void) {
   glEnable(GL_LIGHT0);
 
   glPushMatrix();
-  glLightfv(GL_LIGHT1, GL_POSITION, light1Position);
+  glLightfv(GL_LIGHT1, GL_POSITION, glm::value_ptr(light1Position));
   glEnable(GL_LIGHT1);
   glPopMatrix();
 
