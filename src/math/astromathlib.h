@@ -37,8 +37,6 @@ namespace ASTRO_MATH_LIB
     // Convert Kilometers to Graphical Units
     GLdouble KMtoGU(GLdouble kilometers);
     
-    void test(void);
-    
     
 }
 #endif

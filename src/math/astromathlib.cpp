@@ -19,11 +19,3 @@ GLdouble ASTRO_MATH_LIB::KMtoGU(GLdouble kilometers)
 {
     return kilometers * (1.0/KM_TO_GU_SCALE);
 }
-
-
-
-
-void ASTRO_MATH_LIB::test(void)
-{
-    Log::debug("Test of Astro math Lib");
-}

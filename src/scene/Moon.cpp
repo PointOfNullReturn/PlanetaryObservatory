@@ -44,9 +44,12 @@ void  Moon::InitializeObject(void)
     // Initialize the position
     GLfloat orbitRadius = (ASTRO_MATH_LIB::KMtoGU(384000 + EARTH_RADIUS_KM));
     
-    Log::debug(std::string("Moon orbit angle: ") +
-               std::to_string(m_moonCurrentOrbitalAngle));
-    Log::debug(std::string("Moon orbit radius: ") + std::to_string(orbitRadius));
+    if (Log::kDebugLoggingEnabled)
+    {
+        Log::debug(std::string("Moon orbit angle: ") +
+                   std::to_string(m_moonCurrentOrbitalAngle));
+        Log::debug(std::string("Moon orbit radius: ") + std::to_string(orbitRadius));
+    }
     
     m_moonPositionX = orbitRadius * cos(m_moonCurrentOrbitalAngle);
     m_moonPositionZ = orbitRadius * sin(m_moonCurrentOrbitalAngle);
@@ -72,9 +75,12 @@ void Moon::UpdateObject(void)
     // This gives us the orbit radius from 0,0,0
     GLfloat orbitRadius = (ASTRO_MATH_LIB::KMtoGU(384000 + EARTH_RADIUS_KM));
     
-    Log::debug(std::string("Moon orbit angle: ") +
-               std::to_string(m_moonCurrentOrbitalAngle));
-    Log::debug(std::string("Moon orbit radius: ") + std::to_string(orbitRadius));
+    if (Log::kDebugLoggingEnabled)
+    {
+        Log::debug(std::string("Moon orbit angle: ") +
+                   std::to_string(m_moonCurrentOrbitalAngle));
+        Log::debug(std::string("Moon orbit radius: ") + std::to_string(orbitRadius));
+    }
     
     m_moonPositionX = orbitRadius * cos(m_moonCurrentOrbitalAngle);
     m_moonPositionZ = orbitRadius * sin(m_moonCurrentOrbitalAngle);
@@ -97,8 +103,11 @@ void Moon::RenderObject(RenderModes renderMode)
     glTranslatef(m_moonPositionX, m_moonPositionY, m_moonPositionZ);
     glRotated(90.0 + GetObjectAxisTilt(), 1.0, 0.0, 0.0);
     
-    Log::debug(std::string("Moon position x=") + std::to_string(m_moonPositionX) +
-               " z=" + std::to_string(m_moonPositionZ));
+    if (Log::kDebugLoggingEnabled)
+    {
+        Log::debug(std::string("Moon position x=") + std::to_string(m_moonPositionX) +
+                   " z=" + std::to_string(m_moonPositionZ));
+    }
     
     // If the Scene's View Mode is Wireframe, then the object
     // render's itself in wireframe.

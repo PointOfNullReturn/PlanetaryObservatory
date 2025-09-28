@@ -70,10 +70,13 @@ GLuint LoadTexture2D(const std::string& path,
 
     stbi_image_free(pixels);
 
-    Log::debug(std::string("Loaded texture ") + path + " (" +
-               std::to_string(width) + "x" + std::to_string(height) +
-               ", channels: " + std::to_string(channels) + ") id=" +
-               std::to_string(textureId));
+    if (Log::kDebugLoggingEnabled)
+    {
+        Log::debug(std::string("Loaded texture ") + path + " (" +
+                   std::to_string(width) + "x" + std::to_string(height) +
+                   ", channels: " + std::to_string(channels) + ") id=" +
+                   std::to_string(textureId));
+    }
 
     return textureId;
 }

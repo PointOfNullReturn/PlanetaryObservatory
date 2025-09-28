@@ -33,14 +33,15 @@ void SceneLayer::onAttach(Application& application)
         onResize(width, height);
     }
 
-    Log::info(std::string("The radius of the Earth is 6371.0KM or ") +
-              std::to_string(ASTRO_MATH_LIB::KMtoGU(6371.0)));
-    Log::info(std::string("The radius of the Moon is 1737.0KM or ") +
-              std::to_string(ASTRO_MATH_LIB::KMtoGU(1737.1)));
-    Log::info(std::string("The distance of the Moon from the Earth is 384,000KM or ") +
-              std::to_string(ASTRO_MATH_LIB::KMtoGU(384000.0)));
-    Log::info(std::string("GL Light Enums ") + std::to_string(GL_LIGHT0) + ", " +
-              std::to_string(GL_LIGHT1));
+    if (Log::kDebugLoggingEnabled)
+    {
+        Log::debug(std::string("Earth radius GU: ") +
+                   std::to_string(ASTRO_MATH_LIB::KMtoGU(6371.0)));
+        Log::debug(std::string("Moon radius GU: ") +
+                   std::to_string(ASTRO_MATH_LIB::KMtoGU(1737.1)));
+        Log::debug(std::string("Earth-Moon distance GU: ") +
+                   std::to_string(ASTRO_MATH_LIB::KMtoGU(384000.0)));
+    }
 }
 
 void SceneLayer::onDetach()
