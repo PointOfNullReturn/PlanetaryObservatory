@@ -1,5 +1,7 @@
 #pragma once
 
+#include "scenegraph/components/Component.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -40,6 +42,13 @@ public:
   /// Returns the list of children (const).
   const std::vector<std::unique_ptr<SceneNode>> &children() const;
 
+  /// Adds a component instance to this node.
+  void addComponent(std::unique_ptr<Component> component);
+  /// Returns the components attached to this node.
+  std::vector<std::unique_ptr<Component>> &components();
+  /// Returns the components attached to this node (const).
+  const std::vector<std::unique_ptr<Component>> &components() const;
+
   /// Sets a tooling-friendly name for this node.
   void setName(std::string name);
   /// Returns the tooling/debug name of the node.
@@ -60,4 +69,5 @@ protected:
   std::vector<std::unique_ptr<SceneNode>> m_children;
   SceneNode *m_parent = nullptr;
   std::string m_name;
+  std::vector<std::unique_ptr<Component>> m_components;
 };

@@ -29,6 +29,20 @@ const std::vector<std::unique_ptr<SceneNode>> &SceneNode::children() const {
   return m_children;
 }
 
+void SceneNode::addComponent(std::unique_ptr<Component> component) {
+  if (component) {
+    m_components.emplace_back(std::move(component));
+  }
+}
+
+std::vector<std::unique_ptr<Component>> &SceneNode::components() {
+  return m_components;
+}
+
+const std::vector<std::unique_ptr<Component>> &SceneNode::components() const {
+  return m_components;
+}
+
 void SceneNode::setName(std::string name) { m_name = std::move(name); }
 
 void SceneNode::onAttach() {}
