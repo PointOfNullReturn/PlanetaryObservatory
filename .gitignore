@@ -49,6 +49,9 @@
 # Local CMake build outputs
 /build/
 
+# ImGui runtime state
+imgui.ini
+
 # Project documentation (managed locally)
 /docs/
 

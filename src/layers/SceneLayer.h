@@ -29,6 +29,7 @@ private:
   Application *m_application = nullptr;
   std::unique_ptr<Scene> m_scene;
   std::unique_ptr<SceneGraph> m_sceneGraph;
+  SceneNode *m_selectedNode = nullptr;
   double m_accumulator = 0.0;
   const double m_animationIntervalSeconds = 1.0 / 30.0;
 };

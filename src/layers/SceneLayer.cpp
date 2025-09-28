@@ -190,47 +190,92 @@ void SceneLayer::handleCharacterInput(char key) {
 }
 
 void SceneLayer::onImGuiRender() {
-  if (ImGui::Begin("Diagnostics", nullptr,
-                   ImGuiWindowFlags_AlwaysAutoResize |
-                       ImGuiWindowFlags_NoCollapse)) {
-    const bool inEdit = m_application != nullptr &&
-                        m_application->mode() == ApplicationMode::Edit;
-    ImGui::Text("Mode: %s", inEdit ? "Edit" : "Play");
+  if (!ImGui::Begin("Diagnostics", nullptr,
+                    ImGuiWindowFlags_AlwaysAutoResize |
+                        ImGuiWindowFlags_NoCollapse)) {
+    ImGui::End();
+    return;
+  }
 
-    if (m_scene) {
-      ImGui::SeparatorText("Scene");
-      ImGui::Text("Animating: %s",
-                  m_scene->GetCurrentlyAnimating() ? "Yes" : "No");
-      ImGui::Text("Axes: %s", m_scene->GetShowAxes() ? "On" : "Off");
-      const auto &camera = m_scene->GetCamera();
-      ImGui::Text("Camera radius: %.2f", camera ? camera->GetRadius() : 0.0f);
-    }
+  const bool inEdit = m_application != nullptr &&
+                      m_application->mode() == ApplicationMode::Edit;
+  ImGui::Text("Mode: %s", inEdit ? "Edit" : "Play");
 
-    if (m_application != nullptr && m_application->isFpsDisplayed()) {
-      ImGui::Text("FPS: %.1f", m_application->lastFps());
-    }
+  if (m_scene) {
+    ImGui::SeparatorText("Scene");
+    ImGui::Text("Animating: %s",
+                m_scene->GetCurrentlyAnimating() ? "Yes" : "No");
+    ImGui::Text("Axes: %s", m_scene->GetShowAxes() ? "On" : "Off");
+    const auto &camera = m_scene->GetCamera();
+    ImGui::Text("Camera radius: %.2f",
+                camera ? camera->GetRadius() : 0.0f);
+  }
 
-      if (m_sceneGraph) {
+  if (m_application != nullptr && m_application->isFpsDisplayed()) {
+    ImGui::Text("FPS: %.1f", m_application->lastFps());
+  }
+
+  if (m_sceneGraph) {
     ImGui::SeparatorText("Hierarchy");
-    auto drawNode = [&](auto &&self, SceneNode &node) -> void {
-      const std::string &label = node.name().empty() ? "(unnamed)" : node.name();
-      if (ImGui::TreeNode(&node, "%s", label.c_str())) {
+
+    std::function<void(SceneNode &)> drawNode;
+    drawNode = [&](SceneNode &node) {
+      const std::string &label =
+          node.name().empty() ? "(unnamed)" : node.name();
+      ImGuiTreeNodeFlags flags =
+          ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+      if (m_selectedNode == &node) {
+        flags |= ImGuiTreeNodeFlags_Selected;
+      }
+
+      const bool open =
+          ImGui::TreeNodeEx(&node, flags, "%s", label.c_str());
+      if (ImGui::IsItemClicked()) {
+        m_selectedNode = &node;
+      }
+      if (open) {
         for (auto &child : node.children()) {
           if (child) {
-            self(self, *child);
+            drawNode(*child);
           }
         }
         ImGui::TreePop();
       }
     };
+
     if (SceneNode *rootNode = m_sceneGraph->root()) {
-      drawNode(drawNode, *rootNode);
+      drawNode(*rootNode);
     }
+  }
+
+  if (m_selectedNode != nullptr) {
+    ImGui::SeparatorText("Selected Node");
+    static SceneNode *lastInspected = nullptr;
+    static std::array<char, 128> nameBuffer{};
+    if (m_selectedNode != lastInspected) {
+      std::memset(nameBuffer.data(), 0, nameBuffer.size());
+      if (!m_selectedNode->name().empty()) {
+        std::strncpy(nameBuffer.data(), m_selectedNode->name().c_str(),
+                     nameBuffer.size() - 1);
+      }
+      lastInspected = m_selectedNode;
+    }
+
+    if (ImGui::InputText("Name", nameBuffer.data(), nameBuffer.size())) {
+      m_selectedNode->setName(nameBuffer.data());
+    }
+
+    ImGui::DragFloat3("Position",
+                      m_selectedNode->transform().position, 0.05f);
+    ImGui::DragFloat3("Rotation",
+                      m_selectedNode->transform().rotation, 0.5f);
+    ImGui::DragFloat3("Scale", m_selectedNode->transform().scale, 0.05f,
+                      0.01f, 10.0f);
   }
 
   ImGui::SeparatorText("Controls");
   ImGui::Text("Tab: toggle edit mode");
   ImGui::Text("F: toggle FPS");
-  }
+
   ImGui::End();
 }
