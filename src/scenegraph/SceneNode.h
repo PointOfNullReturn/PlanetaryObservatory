@@ -21,6 +21,8 @@ public:
   SceneNode *parent();
   const SceneNode *parent() const;
 
+  void setParent(SceneNode *parent);
+
   void addChild(std::unique_ptr<SceneNode> child);
   std::vector<std::unique_ptr<SceneNode>> &children();
   const std::vector<std::unique_ptr<SceneNode>> &children() const;

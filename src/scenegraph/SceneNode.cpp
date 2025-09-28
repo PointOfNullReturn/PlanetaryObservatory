@@ -12,9 +12,11 @@ SceneNode *SceneNode::parent() { return m_parent; }
 
 const SceneNode *SceneNode::parent() const { return m_parent; }
 
+void SceneNode::setParent(SceneNode *parent) { m_parent = parent; }
+
 void SceneNode::addChild(std::unique_ptr<SceneNode> child) {
   if (child) {
-    child->m_parent = this;
+    child->setParent(this);
   }
   m_children.emplace_back(std::move(child));
 }
