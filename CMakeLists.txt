@@ -26,6 +26,7 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/render/camera.cpp
     src/scenegraph/SceneGraph.cpp
     src/scenegraph/SceneNode.cpp
+    src/scenegraph/components/CameraComponent.cpp
     src/scene/Earth.cpp
     src/scene/Light.cpp
     src/scene/Moon.cpp

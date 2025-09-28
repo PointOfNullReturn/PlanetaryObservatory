@@ -21,7 +21,7 @@ Scene::Scene() {
   // Instansiate the Moon Planetary Object
   moon = std::make_unique<Moon>("Moon");
 
-  sceneCamera = std::make_unique<OrbitCamera>();
+  sceneCamera = std::make_shared<OrbitCamera>();
   skybox = std::make_unique<Skybox>();
 
   // TODO: Finish Lighting Object
@@ -112,7 +112,9 @@ void Scene::RenderScene(void) {
             0.0, 0.0, 0.0,
             0.0, 1.0, 0.0);*/
 
-  sceneCamera->Render();
+  if (sceneCamera) {
+    sceneCamera->Render();
+  }
 
   if (skybox) {
     skybox->render();

@@ -6,6 +6,7 @@
 #include "math/astromathlib.h"
 #include "scene/Scene.h"
 #include "scenegraph/SceneGraph.h"
+#include "scenegraph/components/CameraComponent.h"
 #include "utils/Log.h"
 
 #include <GLFW/glfw3.h>

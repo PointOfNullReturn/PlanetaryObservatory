@@ -44,9 +44,9 @@ public:
   void HandleKeyboardInput(unsigned char key);
 
   /// Returns the active orbit camera controlling the scene view.
-  OrbitCamera *GetCamera() { return sceneCamera.get(); }
+  std::shared_ptr<OrbitCamera> GetCamera() { return sceneCamera; }
   /// Returns the active orbit camera controlling the scene view.
-  const OrbitCamera *GetCamera() const { return sceneCamera.get(); }
+  std::shared_ptr<const OrbitCamera> GetCamera() const { return sceneCamera; }
 
 private:
   // Data Members
@@ -80,7 +80,7 @@ private:
 
   GLfloat light1Position[4] = {0.0, 0.0, 10.0, 1.0};
 
-  std::unique_ptr<OrbitCamera> sceneCamera;
+  std::shared_ptr<OrbitCamera> sceneCamera;
   std::unique_ptr<Skybox> skybox;
 };
 
