@@ -109,6 +109,11 @@ void SceneLayer::onKey(int key, int scancode, int action, int mods) {
         m_application->toggleFpsDisplay();
       }
       return;
+    case GLFW_KEY_TAB:
+      if (m_application != nullptr) {
+        m_application->toggleEditMode();
+      }
+      return;
     case GLFW_KEY_F1:
       handleCharacterInput('1');
       return;

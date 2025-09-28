@@ -146,7 +146,7 @@ int Application::run() {
     const double deltaTime = currentTime - lastTime;
     lastTime = currentTime;
 
-    if (m_imguiEnabled) {
+    if (m_imguiEnabled && m_mode == ApplicationMode::Edit) {
       ImGui_ImplOpenGL2_NewFrame();
       ImGui_ImplGlfw_NewFrame();
       ImGui::NewFrame();
@@ -164,7 +164,7 @@ int Application::run() {
       }
     }
 
-    if (m_imguiEnabled) {
+    if (m_imguiEnabled && m_mode == ApplicationMode::Edit) {
       if (m_showImGuiDemo) {
         ImGui::ShowDemoWindow(&m_showImGuiDemo);
       }
@@ -235,8 +235,20 @@ void Application::dispatchResize(int width, int height) {
   }
 }
 
+void Application::toggleEditMode() {
+  const bool wasEdit = (m_mode == ApplicationMode::Edit);
+  m_mode = wasEdit ? ApplicationMode::Play : ApplicationMode::Edit;
+
+  if (wasEdit && m_imguiEnabled && ImGui::GetCurrentContext() != nullptr) {
+    ImGuiIO &io = ImGui::GetIO();
+    io.ClearInputCharacters();
+    io.ClearInputKeys();
+  }
+}
+
 void Application::dispatchKey(int key, int scancode, int action, int mods) {
-  if (m_imguiEnabled && ImGui::GetCurrentContext() != nullptr) {
+  if (m_mode == ApplicationMode::Edit && m_imguiEnabled &&
+      ImGui::GetCurrentContext() != nullptr) {
     ImGuiIO &io = ImGui::GetIO();
     if (io.WantCaptureKeyboard) {
       return;

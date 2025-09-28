@@ -16,6 +16,10 @@ struct ApplicationSpecification {
 
 class Layer;
 
+/// Represents whether the application is running in play or edit tooling mode.
+/// Application runtime modes.
+enum class ApplicationMode { Play, Edit };
+
 class Application {
 public:
   Application();
@@ -58,6 +62,11 @@ public:
   void toggleFpsDisplay();
   bool isFpsDisplayed() const { return m_displayFps; }
 
+  /// Toggles between play and edit modes, affecting ImGui and input routing.
+  void toggleEditMode();
+  /// Returns the current application mode.
+  ApplicationMode mode() const { return m_mode; }
+
 private:
   ApplicationSpecification m_specification;
   GLFWwindow *m_window = nullptr;
@@ -71,6 +80,7 @@ private:
   std::string m_windowTitleBase;
   bool m_imguiEnabled = true;
   bool m_showImGuiDemo = true;
+  ApplicationMode m_mode = ApplicationMode::Edit;
 };
 
 #endif
