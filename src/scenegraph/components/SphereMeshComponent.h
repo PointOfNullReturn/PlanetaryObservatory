@@ -12,7 +12,6 @@ public:
     GLint slices = 64;
     GLint stacks = 64;
     RenderModes renderMode = RENDER_MODE_NORMAL;
-    GLuint texture = 0;
 
     SphereMeshComponent() = default;
 

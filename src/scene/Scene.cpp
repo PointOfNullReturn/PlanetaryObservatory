@@ -3,6 +3,7 @@
 #include "utils/Log.h"
 #include "render/TextureLoader.h"
 #include "scenegraph/components/SphereMeshComponent.h"
+#include "scenegraph/components/TextureLayerComponent.h"
 #include "scenegraph/components/TransformComponent.h"
 #include "math/astromathlib.h"
 #include "common/EOPlanetaryConstants.h"
@@ -17,8 +18,10 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   earthNode->setName("Earth");
   auto earthSphere = std::make_unique<SphereMeshComponent>();
   earthSphere->radius = ASTRO_MATH_LIB::KMtoGU(EARTH_RADIUS_KM);
-  earthSphere->texture = LoadTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true);
   earthNode->addComponent(std::move(earthSphere));
+  auto earthTextureLayers = std::make_unique<TextureLayerComponent>();
+  earthTextureLayers->layers.push_back({LoadTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true), TextureBlendMode::None, 1.0f});
+  earthNode->addComponent(std::move(earthTextureLayers));
   this->earthNode = earthNode.get();
   m_sceneGraph.root()->addChild(std::move(earthNode));
 
@@ -26,8 +29,10 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   moonNode->setName("Moon");
   auto moonSphere = std::make_unique<SphereMeshComponent>();
   moonSphere->radius = 0.50;
-  moonSphere->texture = LoadTexture2D("assets/textures/moon_sm.bmp", true, false);
   moonNode->addComponent(std::move(moonSphere));
+  auto moonTextureLayers = std::make_unique<TextureLayerComponent>();
+  moonTextureLayers->layers.push_back({LoadTexture2D("assets/textures/moon_sm.bmp", true, false), TextureBlendMode::None, 1.0f});
+  moonNode->addComponent(std::move(moonTextureLayers));
   this->moonNode = moonNode.get();
   m_sceneGraph.root()->addChild(std::move(moonNode));
 
