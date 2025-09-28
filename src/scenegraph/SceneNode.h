@@ -37,7 +37,18 @@ public:
   /// Returns the list of children.
   std::vector<std::unique_ptr<SceneNode>> &children();
   /// Returns the list of children (const).
+  /// Returns the list of children (const).
   const std::vector<std::unique_ptr<SceneNode>> &children() const;
+
+  /// Called when the node enters the active scene graph.
+  virtual void onAttach();
+  /// Called when the node is removed from the active scene graph.
+  virtual void onDetach();
+  /// Per-frame update hook; `deltaTimeSeconds` is wall-clock time between
+  /// frames.
+  virtual void onUpdate(double deltaTimeSeconds);
+  /// Render hook invoked during the scene graph render pass.
+  virtual void onRender();
 
 protected:
   Transform m_transform;

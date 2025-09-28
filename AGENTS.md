@@ -13,6 +13,10 @@ Use `-DCMAKE_BUILD_TYPE=Debug` during iteration and switch to `Release` when pro
 ## Coding Style & Naming Conventions
 Target modern C++23 idioms. Use 4-space indentation, brace-on-same-line for functions, and `camelCase` for variables/functions while keeping `PascalCase` for types. Prefer standard library facilities over custom utilities. Run `clang-format -style=LLVM` before committing; add a local `.clang-format` override only after team discussion. Keep headers self-contained and include them via project-relative paths (`#include "render/OrbitRenderer.hpp"`).
 
+### Agent Notes
+- Document new headers, classes, and public functions with modern C++ documentation comments (`///` or `/** */`) when introducing or significantly modifying them.
+- Before marking a story complete, provide a short explanation of the relevant code changes and how they satisfy the story requirements.
+
 ## Testing Guidelines
 Add unit tests under `tests/` and register them in CMake with `add_executable` plus `add_test`. Catch2 or GoogleTest are preferred for quick setup; document any additional dependencies. Name test files `<feature>_test.cpp` and mirror the namespace under test. Tests must mock heavy OpenGL state and focus on math/logic so they run headless. Ensure `ctest` returns zero and consider adding coverage reports via `-DCODE_COVERAGE=ON` when needed.
 

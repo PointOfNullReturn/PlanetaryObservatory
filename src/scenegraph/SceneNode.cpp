@@ -28,3 +28,11 @@ std::vector<std::unique_ptr<SceneNode>> &SceneNode::children() {
 const std::vector<std::unique_ptr<SceneNode>> &SceneNode::children() const {
   return m_children;
 }
+
+void SceneNode::onAttach() {}
+
+void SceneNode::onDetach() {}
+
+void SceneNode::onUpdate(double) {}
+
+void SceneNode::onRender() {}

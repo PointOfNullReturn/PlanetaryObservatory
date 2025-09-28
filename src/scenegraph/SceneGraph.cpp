@@ -30,6 +30,34 @@ void SceneGraph::traverse(
   traverseConstImpl(*m_root, visitor);
 }
 
+void SceneGraph::attach() {
+  if (!m_root) {
+    return;
+  }
+  attachImpl(*m_root);
+}
+
+void SceneGraph::detach() {
+  if (!m_root) {
+    return;
+  }
+  detachImpl(*m_root);
+}
+
+void SceneGraph::update(double deltaTimeSeconds) {
+  if (!m_root) {
+    return;
+  }
+  updateImpl(*m_root, deltaTimeSeconds);
+}
+
+void SceneGraph::render() {
+  if (!m_root) {
+    return;
+  }
+  renderImpl(*m_root);
+}
+
 void SceneGraph::traverseImpl(SceneNode &node,
                               const std::function<void(SceneNode &)> &visitor) {
   visitor(node);
@@ -47,6 +75,42 @@ void SceneGraph::traverseConstImpl(
   for (const auto &child : node.children()) {
     if (child) {
       traverseConstImpl(*child, visitor);
+    }
+  }
+}
+
+void SceneGraph::attachImpl(SceneNode &node) {
+  node.onAttach();
+  for (auto &child : node.children()) {
+    if (child) {
+      attachImpl(*child);
+    }
+  }
+}
+
+void SceneGraph::detachImpl(SceneNode &node) {
+  node.onDetach();
+  for (auto &child : node.children()) {
+    if (child) {
+      detachImpl(*child);
+    }
+  }
+}
+
+void SceneGraph::updateImpl(SceneNode &node, double deltaTimeSeconds) {
+  node.onUpdate(deltaTimeSeconds);
+  for (auto &child : node.children()) {
+    if (child) {
+      updateImpl(*child, deltaTimeSeconds);
+    }
+  }
+}
+
+void SceneGraph::renderImpl(SceneNode &node) {
+  node.onRender();
+  for (auto &child : node.children()) {
+    if (child) {
+      renderImpl(*child);
     }
   }
 }

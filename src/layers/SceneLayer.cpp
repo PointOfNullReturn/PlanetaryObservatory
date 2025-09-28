@@ -23,6 +23,7 @@ void SceneLayer::onAttach(Application &application) {
   m_scene->SetRenderMode(RENDER_MODE_NORMAL);
   m_sceneGraph = std::make_unique<SceneGraph>();
   m_sceneGraph->setRoot(std::make_unique<SceneNode>());
+  m_sceneGraph->attach();
 
   int width = 0;
   int height = 0;
@@ -45,6 +46,9 @@ void SceneLayer::onAttach(Application &application) {
 }
 
 void SceneLayer::onDetach() {
+  if (m_sceneGraph) {
+    m_sceneGraph->detach();
+  }
   m_scene.reset();
   m_sceneGraph.reset();
   m_application = nullptr;
@@ -53,6 +57,10 @@ void SceneLayer::onDetach() {
 void SceneLayer::onUpdate(double deltaTime) {
   if (!m_scene) {
     return;
+  }
+
+  if (m_sceneGraph) {
+    m_sceneGraph->update(deltaTime);
   }
 
   m_accumulator += deltaTime;
@@ -71,6 +79,10 @@ void SceneLayer::onRender() {
   }
 
   m_scene->RenderScene();
+
+  if (m_sceneGraph) {
+    m_sceneGraph->render();
+  }
 }
 
 void SceneLayer::onResize(int width, int height) {
