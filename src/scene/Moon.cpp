@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "Moon.h"
-#include "TextureLoader.h"
+#include "scene/Moon.h"
+#include "render/TextureLoader.h"
 
 #include "utils/Log.h"
 

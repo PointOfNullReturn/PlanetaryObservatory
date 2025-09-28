@@ -9,13 +9,13 @@
 #ifndef PLANETARYOBSERVATORY_LIGHT_H
 #define PLANETARYOBSERVATORY_LIGHT_H
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 // C++ Std Includes
 #include <string>
 
 // Other Includes
-#include "EOGlobalEnums.h"
+#include "common/EOGlobalEnums.h"
 
 class Light
 {

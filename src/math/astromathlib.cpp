@@ -10,7 +10,7 @@
  
 *******************************************************************************/
 
-#include "astromathlib.h"
+#include "math/astromathlib.h"
 
 #include "utils/Log.h"
 

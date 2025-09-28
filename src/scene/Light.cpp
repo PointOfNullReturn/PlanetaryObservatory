@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "Light.h"
+#include "scene/Light.h"
 
 Light::Light(std::string lightName, GLenum lightID)
 {

@@ -1,10 +1,10 @@
 #include "layers/SceneLayer.h"
 
 #include "core/Application.h"
-#include "EOGL.h"
-#include "EOGlobals.h"
-#include "Scene.h"
-#include "astromathlib.h"
+#include "common/EOGL.h"
+#include "common/EOGlobals.h"
+#include "scene/Scene.h"
+#include "math/astromathlib.h"
 #include "utils/Log.h"
 
 #include <GLFW/glfw3.h>

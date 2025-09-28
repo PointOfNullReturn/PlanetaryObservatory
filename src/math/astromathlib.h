@@ -13,7 +13,7 @@
 #ifndef EarthObservatory_astromathlib_h
 #define EarthObservatory_astromathlib_h
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 #include <iostream>
 #include <cmath>

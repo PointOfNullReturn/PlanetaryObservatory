@@ -9,7 +9,7 @@
 #ifndef EarthObservatory_EOGlobals_h
 #define EarthObservatory_EOGlobals_h
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 /*
 --------------------------------------------------------------------------------

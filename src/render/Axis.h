@@ -10,7 +10,7 @@
 #define PLANETARYOBSERVATORY_AXIS_H
 
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 class Axis
 {

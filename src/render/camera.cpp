@@ -21,7 +21,7 @@
 //-----------------------------------------------------------------------------
 
 #include <algorithm>
-#include "camera.h"
+#include "render/camera.h"
 
 const float Camera::DEFAULT_ROTATION_SPEED = 0.3f;
 const float Camera::DEFAULT_FOVX = 90.0f;

@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "OrbitCamera.h"
+#include "render/OrbitCamera.h"
 
 #include <algorithm>
 #include <cmath>

@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "Earth.h"
-#include "TextureLoader.h"
+#include "scene/Earth.h"
+#include "render/TextureLoader.h"
 
 // Constructors
 Earth::Earth(std::string objectName) : PlanetaryObject(objectName)
@@ -147,5 +147,4 @@ GLboolean Earth::LoadTextures(void)
     texture = LoadTexture2D("assets/textures/earth_sm.bmp", true, false, true);
     return texture > 0;
 }
-
 

@@ -18,21 +18,21 @@ include(cmake/Dependencies.cmake)
 include(cmake/Warnings.cmake)
 
 set(PLANETARY_OBSERVATORY_SOURCES
-    src/Axis.cpp
-    src/OrbitCamera.cpp
-    src/Earth.cpp
-    src/Light.cpp
-    src/Moon.cpp
-    src/PlanetaryObject.cpp
-    src/Scene.cpp
+    src/app/main.cpp
+    src/render/Axis.cpp
+    src/render/OrbitCamera.cpp
+    src/render/TextureLoader.cpp
+    src/render/camera.cpp
+    src/scene/Earth.cpp
+    src/scene/Light.cpp
+    src/scene/Moon.cpp
+    src/scene/PlanetaryObject.cpp
+    src/scene/Scene.cpp
+    src/math/astromathlib.cpp
+    src/math/mathlib.cpp
     src/utils/Log.cpp
     src/core/Application.cpp
     src/layers/SceneLayer.cpp
-    src/TextureLoader.cpp
-    src/astromathlib.cpp
-    src/camera.cpp
-    src/main.cpp
-    src/mathlib.cpp
 )
 
 add_executable(${PROJECT_NAME} ${PLANETARY_OBSERVATORY_SOURCES})

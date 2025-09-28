@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 #include <string>
 

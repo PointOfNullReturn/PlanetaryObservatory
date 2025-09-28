@@ -9,22 +9,22 @@
 #ifndef PLANETARYOBSERVATORY_SCENE_H
 #define PLANETARYOBSERVATORY_SCENE_H
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 
 // Class Includes
-#include "Axis.h"
-#include "PlanetaryObject.h"
-#include "Earth.h"
-#include "Moon.h"
-#include "Light.h"
-#include "OrbitCamera.h"
+#include "render/Axis.h"
+#include "scene/PlanetaryObject.h"
+#include "scene/Earth.h"
+#include "scene/Moon.h"
+#include "scene/Light.h"
+#include "render/OrbitCamera.h"
 
 // Third Party Camera
 //#include "camera.h"
 
 // Other Includes
-#include "EOGlobalEnums.h"
+#include "common/EOGlobalEnums.h"
 
 class Scene
 {

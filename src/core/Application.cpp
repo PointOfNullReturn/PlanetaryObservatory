@@ -1,7 +1,7 @@
 #include "core/Application.h"
 
 #include "core/Layer.h"
-#include "EOGlobals.h"
+#include "common/EOGlobals.h"
 #include "utils/Log.h"
 
 #include <GLFW/glfw3.h>

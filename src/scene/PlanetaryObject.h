@@ -9,17 +9,17 @@
 #ifndef PLANETARYOBSERVATORY_PLANETARYOBJECT_H
 #define PLANETARYOBSERVATORY_PLANETARYOBJECT_H
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 // C++ Std Includes
 #include <string>
 
 // Constants
-#include "EOGlobalEnums.h"
-#include "EOPlanetaryConstants.h"
+#include "common/EOGlobalEnums.h"
+#include "common/EOPlanetaryConstants.h"
 
 // AstroMath Library
-#include "astromathlib.h"
+#include "math/astromathlib.h"
 
 class PlanetaryObject
 {

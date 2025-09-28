@@ -23,7 +23,7 @@
 #if !defined(CAMERA_H)
 #define CAMERA_H
 
-#include "mathlib.h"
+#include "math/mathlib.h"
 
 //-----------------------------------------------------------------------------
 // A general purpose 6DoF (six degrees of freedom) quaternion based camera.

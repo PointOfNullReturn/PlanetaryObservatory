@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#include "Scene.h"
+#include "scene/Scene.h"
 
 #include "utils/Log.h"
 

@@ -9,10 +9,10 @@
 #ifndef PLANETARYOBSERVATORY_ORBITCAMERA_H
 #define PLANETARYOBSERVATORY_ORBITCAMERA_H
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 // Globals
-#include "EOGlobalEnums.h"
+#include "common/EOGlobalEnums.h"
 
 static const GLfloat MIN_CAMERA_RADIUS = 2.0f;
 static const GLfloat MAX_CAMERA_RADIUS = 38.0f;

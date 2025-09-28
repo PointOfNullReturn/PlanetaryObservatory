@@ -1,34 +1,32 @@
 //
-//  Moon.h
+//  Earth.h
 //  EarthObservatory
 //
-//  Created by Kevin Cox on 11/27/11.
+//  Created by Cox, Kevin on 11/24/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef PLANETARYOBSERVATORY_MOON_H
-#define PLANETARYOBSERVATORY_MOON_H
+#ifndef PLANETARYOBSERVATORY_EARTH_H
+#define PLANETARYOBSERVATORY_EARTH_H
 
-#include "EOGL.h"
+#include "common/EOGL.h"
 
 // C++ Std Includes
 #include <string>
-#include <vector>
-
 
 // Class Includes
-#include "PlanetaryObject.h"
+#include "scene/PlanetaryObject.h"
 
 // Sun Globals
 // Material Properties
 
 
-class Moon : public PlanetaryObject
+class Earth : public PlanetaryObject
 {
 public:
     // Constructors
-    Moon(std::string objectName);
-    ~Moon();
+    Earth(std::string objectName);
+    ~Earth();
     
     // Accessors
     
@@ -48,18 +46,11 @@ private:
     void InitializeObject(void);
     void InitializeMaterials(void);    
     
-    // Textures
-    std::vector<GLuint> m_textures;
-    
-    // Data Members
-    GLfloat m_moonPositionX;
-    GLfloat m_moonPositionY;
-    GLfloat m_moonPositionZ;
-    GLfloat m_moonCurrentOrbitalAngle;
     GLuint texture;
-    GLUquadric *moon;
+    GLUquadric* earth;
+    GLfloat m_rotationAngle;
     
 };
 
 
-#endif // PLANETARYOBSERVATORY_MOON_H
+#endif // PLANETARYOBSERVATORY_EARTH_H

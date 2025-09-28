@@ -2,7 +2,7 @@
 #define PLANETARY_OBSERVATORY_LAYERS_SCENELAYER_H
 
 #include "core/Layer.h"
-#include "Scene.h"
+#include "scene/Scene.h"
 
 #include <memory>
 

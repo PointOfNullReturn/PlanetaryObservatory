@@ -7,7 +7,7 @@
 //
 
 
-#include "PlanetaryObject.h"
+#include "scene/PlanetaryObject.h"
 
 using namespace ASTRO_MATH_LIB;
 
