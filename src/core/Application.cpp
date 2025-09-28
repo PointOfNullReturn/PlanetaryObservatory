@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <utility>
 #include <string>
+#include <sstream>
 
 namespace
 {
@@ -70,6 +71,8 @@ void Application::initialize()
 
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(m_specification.enableVsync ? 1 : 0);
+
+    m_windowTitleBase = m_specification.name;
 
     setupCallbacks();
 }
@@ -150,12 +153,59 @@ int Application::run()
             }
         }
 
+        updateFps(deltaTime);
+
         glfwSwapBuffers(m_window);
         glfwPollEvents();
     }
 
     shutdown();
     return EXIT_SUCCESS;
+}
+
+void Application::updateFps(double deltaTime)
+{
+    if (!m_displayFps || m_window == nullptr)
+    {
+        return;
+    }
+
+    m_fpsAccumulator += deltaTime;
+    ++m_fpsFrameCount;
+
+    if (m_fpsAccumulator >= 1.0)
+    {
+        const double fps = static_cast<double>(m_fpsFrameCount) / m_fpsAccumulator;
+        m_lastFps = fps;
+        m_fpsAccumulator = 0.0;
+        m_fpsFrameCount = 0;
+
+        std::ostringstream title;
+        title.setf(std::ios::fixed);
+        title.precision(1);
+        title << m_windowTitleBase << " | FPS: " << fps;
+        glfwSetWindowTitle(m_window, title.str().c_str());
+    }
+}
+
+void Application::toggleFpsDisplay()
+{
+    m_displayFps = !m_displayFps;
+
+    if (!m_displayFps)
+    {
+        m_fpsAccumulator = 0.0;
+        m_fpsFrameCount = 0;
+        m_lastFps = 0.0;
+        if (m_window != nullptr)
+        {
+            glfwSetWindowTitle(m_window, m_windowTitleBase.c_str());
+        }
+    }
+    else if (m_window != nullptr)
+    {
+        glfwSetWindowTitle(m_window, (m_windowTitleBase + " | FPS: --").c_str());
+    }
 }
 
 void Application::close()

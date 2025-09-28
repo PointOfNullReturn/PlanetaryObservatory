@@ -103,6 +103,12 @@ void SceneLayer::onKey(int key, int scancode, int action, int mods)
     {
         switch (key)
         {
+            case GLFW_KEY_F:
+                if (m_application != nullptr)
+                {
+                    m_application->toggleFpsDisplay();
+                }
+                return;
             case GLFW_KEY_F1:
                 handleCharacterInput('1');
                 return;

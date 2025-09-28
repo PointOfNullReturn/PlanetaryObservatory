@@ -42,14 +42,25 @@ private:
     void dispatchResize(int width, int height);
     void dispatchKey(int key, int scancode, int action, int mods);
     void updateMonitorDimensions();
+    void updateFps(double deltaTime);
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+public:
+    void toggleFpsDisplay();
+    bool isFpsDisplayed() const { return m_displayFps; }
+
+private:
     ApplicationSpecification m_specification;
     GLFWwindow* m_window = nullptr;
     bool m_running = false;
     bool m_glfwInitialized = false;
     std::vector<std::unique_ptr<Layer>> m_layers;
-};
+    bool m_displayFps = false;
+    double m_fpsAccumulator = 0.0;
+    int m_fpsFrameCount = 0;
+    double m_lastFps = 0.0;
+    std::string m_windowTitleBase;
+}; 
 
 #endif
