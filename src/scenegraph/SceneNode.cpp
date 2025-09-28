@@ -29,6 +29,8 @@ const std::vector<std::unique_ptr<SceneNode>> &SceneNode::children() const {
   return m_children;
 }
 
+void SceneNode::setName(std::string name) { m_name = std::move(name); }
+
 void SceneNode::onAttach() {}
 
 void SceneNode::onDetach() {}

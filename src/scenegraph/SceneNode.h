@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
 /// Represents a local transform for a scene node.
@@ -37,8 +38,12 @@ public:
   /// Returns the list of children.
   std::vector<std::unique_ptr<SceneNode>> &children();
   /// Returns the list of children (const).
-  /// Returns the list of children (const).
   const std::vector<std::unique_ptr<SceneNode>> &children() const;
+
+  /// Sets a tooling-friendly name for this node.
+  void setName(std::string name);
+  /// Returns the tooling/debug name of the node.
+  const std::string &name() const { return m_name; }
 
   /// Called when the node enters the active scene graph.
   virtual void onAttach();
@@ -54,4 +59,5 @@ protected:
   Transform m_transform;
   std::vector<std::unique_ptr<SceneNode>> m_children;
   SceneNode *m_parent = nullptr;
+  std::string m_name;
 };

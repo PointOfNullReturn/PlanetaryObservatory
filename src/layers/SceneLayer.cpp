@@ -199,16 +199,34 @@ void SceneLayer::onImGuiRender() {
 
     if (m_scene) {
       ImGui::SeparatorText("Scene");
-      ImGui::Text("Animating: %s",
-                  m_scene->GetCurrentlyAnimating() ? "Yes" : "No");
-      ImGui::Text("Axes: %s", m_scene->GetShowAxes() ? "On" : "Off");
-      const auto &camera = m_scene->GetCamera();
-      ImGui::Text("Camera radius: %.2f", camera ? camera->GetRadius() : 0.0f);
-    }
+    ImGui::Text("Animating: %s",
+                m_scene->GetCurrentlyAnimating() ? "Yes" : "No");
+    ImGui::Text("Axes: %s", m_scene->GetShowAxes() ? "On" : "Off");
+    const auto &camera = m_scene->GetCamera();
+    ImGui::Text("Camera radius: %.2f", camera ? camera->GetRadius() : 0.0f);
+  }
 
-    ImGui::SeparatorText("Controls");
-    ImGui::Text("Tab: toggle edit mode");
-    ImGui::Text("F: toggle FPS");
+  if (m_sceneGraph) {
+    ImGui::SeparatorText("Hierarchy");
+    auto drawNode = [&](auto &&self, SceneNode &node) -> void {
+      const std::string &label = node.name().empty() ? "(unnamed)" : node.name();
+      if (ImGui::TreeNode(&node, "%s", label.c_str())) {
+        for (auto &child : node.children()) {
+          if (child) {
+            self(self, *child);
+          }
+        }
+        ImGui::TreePop();
+      }
+    };
+    if (SceneNode *rootNode = m_sceneGraph->root()) {
+      drawNode(drawNode, *rootNode);
+    }
+  }
+
+  ImGui::SeparatorText("Controls");
+  ImGui::Text("Tab: toggle edit mode");
+  ImGui::Text("F: toggle FPS");
   }
   ImGui::End();
 }
