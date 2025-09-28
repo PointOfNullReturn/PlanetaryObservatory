@@ -1,6 +1,6 @@
 #include "scenegraph/SceneNode.h"
 
-SceneNode::SceneNode() = default;
+SceneNode::SceneNode() = default; // Transform already identity by default
 
 SceneNode::SceneNode(const Transform &transform) : m_transform(transform) {}
 
