@@ -10,6 +10,7 @@
 
 #include "utils/Log.h"
 
+#include <memory>
 #include <string>
 
 
@@ -18,19 +19,19 @@ Scene::Scene()
 {
     
     // Instansiate the Earth Planetary Object
-    earth = new Earth("Earth");
+    earth = std::make_unique<Earth>("Earth");
     
     // Instansiate the Moon Planetary Object
-    moon = new Moon("Moon");
+    moon = std::make_unique<Moon>("Moon");
     
-    sceneCamera = new OrbitCamera();
+    sceneCamera = std::make_unique<OrbitCamera>();
     
     //TODO: Finish Lighting Object
-    //ambientLight = new Light("LIGHT0", GL_LIGHT0);
+    //ambientLight = std::make_unique<Light>("LIGHT0", GL_LIGHT0);
     InitializeScene();
     
     // This all needs to go in a scene init function.
-    axes = new Axis(10.0, 2.0, false);
+    axes = std::make_unique<Axis>(10.0, 2.0, false);
     
     if (axes->GetEnableAxes())
         showAxes = true;

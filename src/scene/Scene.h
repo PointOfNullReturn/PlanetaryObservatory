@@ -11,20 +11,15 @@
 
 #include "common/EOGL.h"
 
-
-// Class Includes
 #include "render/Axis.h"
-#include "scene/PlanetaryObject.h"
-#include "scene/Earth.h"
-#include "scene/Moon.h"
-#include "scene/Light.h"
 #include "render/OrbitCamera.h"
-
-// Third Party Camera
-//#include "camera.h"
-
-// Other Includes
+#include "scene/Earth.h"
+#include "scene/Light.h"
+#include "scene/Moon.h"
+#include "scene/PlanetaryObject.h"
 #include "common/EOGlobalEnums.h"
+
+#include <memory>
 
 class Scene
 {
@@ -53,15 +48,15 @@ private:
     
     // Data Members
     // Scene Objects
-    PlanetaryObject* earth;   // The Earth
-    PlanetaryObject* moon;    // The Moon
+    std::unique_ptr<Earth> earth;   // The Earth
+    std::unique_ptr<Moon> moon;    // The Moon
     
     // TODO: Implement All Planetary Objects in an array
     //vector<PlanetaryObject*> planetaryObjects;    // List of Planetary Objects to Render
     
     
     // Lighting Objects
-    [[maybe_unused]] Light* ambientLight;      // Scene Ambient Lighting
+    [[maybe_unused]] std::unique_ptr<Light> ambientLight;      // Scene Ambient Lighting
     
     
     // Camera Objects
@@ -74,7 +69,7 @@ private:
     GLboolean m_currentlyAnimating;
     
     GLboolean showAxes;     // Whether or not to show the coordinate system axis
-    Axis* axes;           // Pointer to the instansiated axes class
+    std::unique_ptr<Axis> axes;           // Pointer to the instansiated axes class
     
     
     GLfloat ambientLightColor[4] = {0.50, 0.50, 0.50, 1.0};
@@ -85,8 +80,7 @@ private:
     GLfloat light1Position[4] = {0.0, 0.0, 10.0, 1.0 };
     
     
-    //CCamera sceneCamera;
-    OrbitCamera* sceneCamera;
+    std::unique_ptr<OrbitCamera> sceneCamera;
         
 };
 
