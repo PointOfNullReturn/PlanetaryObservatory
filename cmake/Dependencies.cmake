@@ -54,5 +54,45 @@ else()
     endif()
 endif()
 
+set(IMGUI_ROOT "${CMAKE_CURRENT_LIST_DIR}/../third_party/imgui")
+
+if(NOT EXISTS "${IMGUI_ROOT}/imgui.cpp")
+    message(FATAL_ERROR "Dear ImGui sources not found under ${IMGUI_ROOT}. Run `git clone https://github.com/ocornut/imgui.git third_party/imgui --branch v1.89.9 --depth 1` from the repository root.")
+endif()
+
+set(IMGUI_SOURCES
+    ${IMGUI_ROOT}/imgui.cpp
+    ${IMGUI_ROOT}/imgui_draw.cpp
+    ${IMGUI_ROOT}/imgui_tables.cpp
+    ${IMGUI_ROOT}/imgui_widgets.cpp
+    ${IMGUI_ROOT}/imgui_demo.cpp
+    ${IMGUI_ROOT}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_ROOT}/backends/imgui_impl_opengl2.cpp)
+
+add_library(imgui_backend STATIC ${IMGUI_SOURCES})
+add_library(imgui::backend ALIAS imgui_backend)
+target_include_directories(imgui_backend
+    PUBLIC
+        ${IMGUI_ROOT}
+        ${IMGUI_ROOT}/backends)
+target_compile_features(imgui_backend PUBLIC cxx_std_17)
+
+if(TARGET glfw)
+    target_link_libraries(imgui_backend PUBLIC glfw)
+elseif(TARGET glfw::glfw)
+    target_link_libraries(imgui_backend PUBLIC glfw::glfw)
+elseif(GLFW3_FOUND)
+    target_include_directories(imgui_backend PUBLIC ${GLFW3_INCLUDE_DIRS})
+    target_link_libraries(imgui_backend PUBLIC ${GLFW3_LIBRARIES})
+endif()
+
+if(TARGET OpenGL::GL)
+    target_link_libraries(imgui_backend PUBLIC OpenGL::GL)
+elseif(TARGET OpenGL::OpenGL)
+    target_link_libraries(imgui_backend PUBLIC OpenGL::OpenGL)
+endif()
+
+list(APPEND _planetary_observatory_dep_link_libs imgui::backend)
+
 set(PLANETARY_OBSERVATORY_DEP_INCLUDE_DIRS "${_planetary_observatory_dep_include_dirs}")
 set(PLANETARY_OBSERVATORY_DEP_LINK_LIBS "${_planetary_observatory_dep_link_libs}")
