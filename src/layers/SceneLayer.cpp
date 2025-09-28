@@ -15,6 +15,8 @@
 #include <memory>
 #include <string>
 
+#include <imgui.h>
+
 SceneLayer::SceneLayer() = default;
 
 void SceneLayer::onAttach(Application &application) {
@@ -82,6 +84,11 @@ void SceneLayer::onRender() {
 
   if (m_sceneGraph) {
     m_sceneGraph->render();
+  }
+
+  if (m_application != nullptr &&
+      m_application->mode() == ApplicationMode::Edit) {
+    onImGuiRender();
   }
 }
 
@@ -180,4 +187,28 @@ void SceneLayer::handleCharacterInput(char key) {
   if (m_scene) {
     m_scene->HandleKeyboardInput(static_cast<unsigned char>(key));
   }
+}
+
+void SceneLayer::onImGuiRender() {
+  if (ImGui::Begin("Diagnostics", nullptr,
+                   ImGuiWindowFlags_AlwaysAutoResize |
+                       ImGuiWindowFlags_NoCollapse)) {
+    const bool inEdit = m_application != nullptr &&
+                        m_application->mode() == ApplicationMode::Edit;
+    ImGui::Text("Mode: %s", inEdit ? "Edit" : "Play");
+
+    if (m_scene) {
+      ImGui::SeparatorText("Scene");
+      ImGui::Text("Animating: %s",
+                  m_scene->GetCurrentlyAnimating() ? "Yes" : "No");
+      ImGui::Text("Axes: %s", m_scene->GetShowAxes() ? "On" : "Off");
+      const auto &camera = m_scene->GetCamera();
+      ImGui::Text("Camera radius: %.2f", camera ? camera->GetRadius() : 0.0f);
+    }
+
+    ImGui::SeparatorText("Controls");
+    ImGui::Text("Tab: toggle edit mode");
+    ImGui::Text("F: toggle FPS");
+  }
+  ImGui::End();
 }

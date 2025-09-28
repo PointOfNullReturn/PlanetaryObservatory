@@ -18,6 +18,7 @@ public:
   void onDetach() override;
   void onUpdate(double deltaTime) override;
   void onRender() override;
+  void onImGuiRender();
   void onResize(int width, int height) override;
   void onKey(int key, int scancode, int action, int mods) override;
 

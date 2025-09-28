@@ -43,6 +43,11 @@ public:
   void InitializeScene(void);
   void HandleKeyboardInput(unsigned char key);
 
+  /// Returns the active orbit camera controlling the scene view.
+  OrbitCamera *GetCamera() { return sceneCamera.get(); }
+  /// Returns the active orbit camera controlling the scene view.
+  const OrbitCamera *GetCamera() const { return sceneCamera.get(); }
+
 private:
   // Data Members
   // Scene Objects
