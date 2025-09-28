@@ -1,26 +1,35 @@
-//
-//  Scene.cpp
-//  EarthObservatory
-//
-//  Created by Kevin Cox on 11/23/11.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
-//
-
 #include "scene/Scene.h"
 
 #include "utils/Log.h"
+#include "render/TextureLoader.h"
+#include "scenegraph/components/SphereMeshComponent.h"
+#include "scenegraph/components/TransformComponent.h"
+#include "math/astromathlib.h"
+#include "common/EOPlanetaryConstants.h"
 
 #include <memory>
 #include <string>
 #include <glm/gtc/type_ptr.hpp>
 
-Scene::Scene() {
+Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
 
-  // Instansiate the Earth Planetary Object
-  earth = std::make_unique<Earth>("Earth");
+  auto earthNode = std::make_unique<SceneNode>();
+  earthNode->setName("Earth");
+  auto earthSphere = std::make_unique<SphereMeshComponent>();
+  earthSphere->radius = ASTRO_MATH_LIB::KMtoGU(EARTH_RADIUS_KM);
+  earthSphere->texture = LoadTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true);
+  earthNode->addComponent(std::move(earthSphere));
+  this->earthNode = earthNode.get();
+  m_sceneGraph.root()->addChild(std::move(earthNode));
 
-  // Instansiate the Moon Planetary Object
-  moon = std::make_unique<Moon>("Moon");
+  auto moonNode = std::make_unique<SceneNode>();
+  moonNode->setName("Moon");
+  auto moonSphere = std::make_unique<SphereMeshComponent>();
+  moonSphere->radius = 0.50;
+  moonSphere->texture = LoadTexture2D("assets/textures/moon_sm.bmp", true, false);
+  moonNode->addComponent(std::move(moonSphere));
+  this->moonNode = moonNode.get();
+  m_sceneGraph.root()->addChild(std::move(moonNode));
 
   sceneCamera = std::make_shared<OrbitCamera>();
   skybox = std::make_unique<Skybox>();
@@ -88,7 +97,14 @@ GLboolean Scene::GetShowAxes(void) { return showAxes; }
 GLboolean Scene::GetCurrentlyAnimating(void) { return m_currentlyAnimating; }
 
 // Mutator Methods
-void Scene::SetRenderMode(RenderModes renderMode) { m_renderMode = renderMode; }
+void Scene::SetRenderMode(RenderModes renderMode) {
+  m_renderMode = renderMode;
+  m_sceneGraph.traverse([renderMode](SceneNode& node) {
+    if (auto* sphereMesh = node.getComponent<SphereMeshComponent>()) {
+      sphereMesh->renderMode = renderMode;
+    }
+  });
+}
 
 void Scene::SetShowAxes(GLboolean show) {
   showAxes = show;
@@ -106,13 +122,6 @@ void Scene::RenderScene(void) {
 
   glLoadIdentity();
 
-  // Third Party Camera
-  // sceneCamera.Render();
-  /*
-  gluLookAt(3.0, 0.0, ASTRO_MATH_LIB::KMtoGU(10000.0 + EARTH_RADIUS_KM),
-            0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0);*/
-
   if (sceneCamera) {
     sceneCamera->Render();
   }
@@ -128,32 +137,19 @@ void Scene::RenderScene(void) {
   glEnable(GL_LIGHT1);
   glPopMatrix();
 
-  // glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-  glPushMatrix();
-  glTranslatef(0.0f, 0.0f, 0.0f);
-
-  if (m_renderMode == RENDER_MODE_NORMAL) {
-    earth->RenderObject(RENDER_MODE_NORMAL);
-    moon->RenderObject(RENDER_MODE_NORMAL);
-  } else {
-    earth->RenderObject(RENDER_MODE_WIREFRAME);
-    moon->RenderObject(RENDER_MODE_WIREFRAME);
-  }
-  glPopMatrix();
-
-  if (axes->GetEnableAxes()) {
-    axes->SetAxesLength(sceneCamera->GetRadius());
-    Log::debug("Rendering axes");
-    axes->Render();
-  }
-
-  // Flush drawing commands handled by caller.
+  // The scene graph will handle the rendering of the objects
 }
 
 void Scene::UpdateScene(void) {
   // If currently animating, update all objects
-  moon->UpdateObject();
-  earth->UpdateObject();
+  if (earthNode) {
+    auto transform = earthNode->getComponent<TransformComponent>();
+    transform->rotation.y += 0.05f;
+  }
+  if (moonNode) {
+    auto transform = moonNode->getComponent<TransformComponent>();
+    transform->rotation.y += 0.008f;
+  }
 }
 
 void Scene::HandleKeyboardInput(unsigned char key) {

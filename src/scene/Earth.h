@@ -1,11 +1,3 @@
-//
-//  Earth.h
-//  EarthObservatory
-//
-//  Created by Cox, Kevin on 11/24/11.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
-//
-
 #ifndef PLANETARYOBSERVATORY_EARTH_H
 #define PLANETARYOBSERVATORY_EARTH_H
 
@@ -18,10 +10,6 @@
 // Class Includes
 #include "scene/PlanetaryObject.h"
 
-// Sun Globals
-// Material Properties
-
-
 class Earth : public PlanetaryObject
 {
 public:
@@ -29,30 +17,14 @@ public:
     Earth(std::string objectName);
     ~Earth();
     
-    // Accessors
-    
-    
-    // Mutators
-    
-    
     // Other
-    void RenderObject(RenderModes renderMode);
     void UpdateObject(void);
     
-    
 private:
-    using QuadricPtr = std::unique_ptr<GLUquadric, void (*)(GLUquadric*)>;
-
     // Other Methods
-    GLboolean LoadTextures(void);
     void InitializeObject(void);
-    void InitializeMaterials(void);    
     
-    GLuint texture;
-    QuadricPtr earth{nullptr, gluDeleteQuadric};
     GLfloat m_rotationAngle;
-    
 };
-
 
 #endif // PLANETARYOBSERVATORY_EARTH_H

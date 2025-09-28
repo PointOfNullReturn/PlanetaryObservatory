@@ -1,11 +1,3 @@
-//
-//  Scene.h
-//  EarthObservatory
-//
-//  Created by Kevin Cox on 11/23/11.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
-//
-
 #ifndef PLANETARYOBSERVATORY_SCENE_H
 #define PLANETARYOBSERVATORY_SCENE_H
 
@@ -15,10 +7,9 @@
 #include "render/Axis.h"
 #include "render/OrbitCamera.h"
 #include "render/Skybox.h"
-#include "scene/Earth.h"
 #include "scene/Light.h"
-#include "scene/Moon.h"
-#include "scene/PlanetaryObject.h"
+#include "scenegraph/SceneGraph.h"
+#include "scenegraph/SceneNode.h"
 
 #include <memory>
 
@@ -27,7 +18,7 @@
 
 class Scene {
 public:
-  Scene();
+  Scene(SceneGraph& sceneGraph);
   ~Scene();
 
   // Accessor Methods
@@ -54,8 +45,9 @@ public:
 private:
   // Data Members
   // Scene Objects
-  std::unique_ptr<Earth> earth; // The Earth
-  std::unique_ptr<Moon> moon;   // The Moon
+  SceneGraph& m_sceneGraph;
+  SceneNode* earthNode = nullptr;
+  SceneNode* moonNode = nullptr;
 
   // TODO: Implement All Planetary Objects in an array
   // vector<PlanetaryObject*> planetaryObjects;    // List of Planetary Objects

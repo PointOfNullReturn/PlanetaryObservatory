@@ -55,4 +55,8 @@ void SceneNode::onDetach() {}
 
 void SceneNode::onUpdate(double) {}
 
-void SceneNode::onRender() {}
+void SceneNode::onRender() {
+    for (auto& component : m_components) {
+        component->onRender(*this);
+    }
+}

@@ -27,10 +27,10 @@ SceneLayer::SceneLayer() = default;
 
 void SceneLayer::onAttach(Application &application) {
   m_application = &application;
-  m_scene = std::make_unique<Scene>();
-  m_scene->SetRenderMode(RENDER_MODE_NORMAL);
   m_sceneGraph = std::make_unique<SceneGraph>();
   m_sceneGraph->setRoot(std::make_unique<SceneNode>());
+  m_scene = std::make_unique<Scene>(*m_sceneGraph);
+  m_scene->SetRenderMode(RENDER_MODE_NORMAL);
   m_sceneGraph->attach();
 
   int width = 0;

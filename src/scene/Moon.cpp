@@ -1,14 +1,4 @@
-//
-//  Moon.cpp
-//  EarthObservatory
-//
-//  Created by Kevin Cox on 11/27/11.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
-//
-
 #include "scene/Moon.h"
-#include "render/TextureLoader.h"
-
 #include "utils/Log.h"
 
 #include <cmath>
@@ -17,17 +7,7 @@
 // Constructors
 Moon::Moon(std::string objectName) : PlanetaryObject(objectName)
 {
-
-    
     InitializeObject();
-    InitializeMaterials();
-    LoadTextures();
-    
-    moon.reset(gluNewQuadric());
-    if (moon != nullptr)
-    {
-        gluQuadricNormals(moon.get(), GLU_SMOOTH);
-    }
 }
 
 
@@ -85,111 +65,4 @@ void Moon::UpdateObject(void)
     m_moonPositionX = orbitRadius * cos(m_moonCurrentOrbitalAngle);
     m_moonPositionZ = orbitRadius * sin(m_moonCurrentOrbitalAngle);
     m_moonPositionY = 0.0;
-}
-
-
-void Moon::RenderObject(RenderModes renderMode)
-{
-    
-    // Push All Attribute Bits
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    
-    // Push Current Matrix
-    glPushMatrix();
-    
-    // Materials
-    InitializeMaterials();
-    
-    glTranslatef(m_moonPositionX, m_moonPositionY, m_moonPositionZ);
-    glRotated(90.0 + GetObjectAxisTilt(), 1.0, 0.0, 0.0);
-    
-    if (Log::kDebugLoggingEnabled)
-    {
-        Log::debug(std::string("Moon position x=") + std::to_string(m_moonPositionX) +
-                   " z=" + std::to_string(m_moonPositionZ));
-    }
-    
-    // If the Scene's View Mode is Wireframe, then the object
-    // render's itself in wireframe.
-    const bool hasTexture = texture > 0;
-
-    if (renderMode == RENDER_MODE_WIREFRAME)
-    {
-        gluQuadricTexture(moon.get(), hasTexture ? GL_TRUE : GL_FALSE);
-        gluQuadricDrawStyle(moon.get(), GLU_LINE);
-
-        if (hasTexture)
-        {
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, texture);
-        }
-        else
-        {
-            glDisable(GL_TEXTURE_2D);
-        }
-
-        gluSphere(moon.get(), GetObjectRadius(), 64, 64);
-
-        if (hasTexture)
-        {
-            glDisable(GL_TEXTURE_2D);
-        }
-
-        gluQuadricDrawStyle(moon.get(), GLU_FILL);
-    }
-    else
-    {
-        gluQuadricTexture(moon.get(), hasTexture ? GL_TRUE : GL_FALSE);
-        gluQuadricDrawStyle(moon.get(), GLU_FILL);
-
-        if (hasTexture)
-        {
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, texture);
-        }
-        else
-        {
-            glDisable(GL_TEXTURE_2D);
-        }
-
-        gluSphere(moon.get(), GetObjectRadius(), 64, 64);
-
-        if (hasTexture)
-        {
-            glDisable(GL_TEXTURE_2D);
-        }
-    }
-    
-    
-    // Pop Current Matrix
-    glPopMatrix();
-    
-    // Pop All Attribute Bits
-    glPopAttrib();
-    
-}
-
-
-
-
-void  Moon::InitializeMaterials(void)
-{
-    GLfloat moon_material_ambient[] = {0.50f, 0.50f, 0.50f, 1.0f};
-    GLfloat moon_material_diffused[] = {0.75f, 0.75f, 0.75f, 1.0f};
-    GLfloat moon_material_specular[] = {0.75f, 0.75f, 0.75f, 1.0f};
-    GLfloat moon_material_shininess[] = {85.0f};
-    
-    glMaterialfv(GL_FRONT, GL_AMBIENT, moon_material_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, moon_material_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, moon_material_diffused);
-    glMaterialfv(GL_FRONT, GL_SHININESS, moon_material_shininess);
-    
-}
-
-
-
-GLboolean Moon::LoadTextures(void)
-{
-    texture = LoadTexture2D("assets/textures/moon_sm.bmp", true, false);
-    return texture > 0;
 }

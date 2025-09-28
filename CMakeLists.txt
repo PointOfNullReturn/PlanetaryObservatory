@@ -28,6 +28,7 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/scenegraph/SceneNode.cpp
     src/scenegraph/components/CameraComponent.cpp
     src/scenegraph/components/TransformComponent.cpp
+    src/scenegraph/components/SphereMeshComponent.cpp
     src/scene/Earth.cpp
     src/scene/Light.cpp
     src/scene/Moon.cpp
@@ -62,6 +63,10 @@ if(PLANETARY_OBSERVATORY_DEP_LINK_LIBS)
     target_link_libraries(${PROJECT_NAME}
         PRIVATE
             ${PLANETARY_OBSERVATORY_DEP_LINK_LIBS})
+endif()
+
+if(PO_ENABLE_DEBUG_LOGS)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PO_ENABLE_DEBUG_LOGS)
 endif()
 
 if(APPLE)
