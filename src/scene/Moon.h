@@ -12,6 +12,7 @@
 #include "common/EOGL.h"
 
 // C++ Std Includes
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -42,7 +43,8 @@ public:
     
     
 private:
-    
+    using QuadricPtr = std::unique_ptr<GLUquadric, void (*)(GLUquadric*)>;
+
     // Other Methods
     GLboolean LoadTextures(void);
     void InitializeObject(void);
@@ -57,7 +59,7 @@ private:
     GLfloat m_moonPositionZ;
     GLfloat m_moonCurrentOrbitalAngle;
     GLuint texture;
-    GLUquadric *moon;
+    QuadricPtr moon{nullptr, gluDeleteQuadric};
     
 };
 

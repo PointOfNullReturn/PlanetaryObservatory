@@ -23,18 +23,15 @@ Moon::Moon(std::string objectName) : PlanetaryObject(objectName)
     InitializeMaterials();
     LoadTextures();
     
-    moon = gluNewQuadric();
+    moon.reset(gluNewQuadric());
     if (moon != nullptr)
     {
-        gluQuadricNormals(moon, GLU_SMOOTH);
+        gluQuadricNormals(moon.get(), GLU_SMOOTH);
     }
 }
 
 
-Moon::~Moon()
-{
-    
-}
+Moon::~Moon() = default;
 
 
 void  Moon::InitializeObject(void)
@@ -109,8 +106,8 @@ void Moon::RenderObject(RenderModes renderMode)
 
     if (renderMode == RENDER_MODE_WIREFRAME)
     {
-        gluQuadricTexture(moon, hasTexture ? GL_TRUE : GL_FALSE);
-        gluQuadricDrawStyle(moon, GLU_LINE);
+        gluQuadricTexture(moon.get(), hasTexture ? GL_TRUE : GL_FALSE);
+        gluQuadricDrawStyle(moon.get(), GLU_LINE);
 
         if (hasTexture)
         {
@@ -122,19 +119,19 @@ void Moon::RenderObject(RenderModes renderMode)
             glDisable(GL_TEXTURE_2D);
         }
 
-        gluSphere(moon, GetObjectRadius(), 64, 64);
+        gluSphere(moon.get(), GetObjectRadius(), 64, 64);
 
         if (hasTexture)
         {
             glDisable(GL_TEXTURE_2D);
         }
 
-        gluQuadricDrawStyle(moon, GLU_FILL);
+        gluQuadricDrawStyle(moon.get(), GLU_FILL);
     }
     else
     {
-        gluQuadricTexture(moon, hasTexture ? GL_TRUE : GL_FALSE);
-        gluQuadricDrawStyle(moon, GLU_FILL);
+        gluQuadricTexture(moon.get(), hasTexture ? GL_TRUE : GL_FALSE);
+        gluQuadricDrawStyle(moon.get(), GLU_FILL);
 
         if (hasTexture)
         {
@@ -146,7 +143,7 @@ void Moon::RenderObject(RenderModes renderMode)
             glDisable(GL_TEXTURE_2D);
         }
 
-        gluSphere(moon, GetObjectRadius(), 64, 64);
+        gluSphere(moon.get(), GetObjectRadius(), 64, 64);
 
         if (hasTexture)
         {

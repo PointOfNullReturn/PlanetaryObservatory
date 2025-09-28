@@ -18,18 +18,15 @@ Earth::Earth(std::string objectName) : PlanetaryObject(objectName)
 
     m_rotationAngle = 0.0f;
     
-    earth = gluNewQuadric();
+    earth.reset(gluNewQuadric());
     if (earth != nullptr)
     {
-        gluQuadricNormals(earth, GLU_SMOOTH);
+        gluQuadricNormals(earth.get(), GLU_SMOOTH);
     }
 }
 
 
-Earth::~Earth()
-{
-    gluDeleteQuadric(earth);
-}
+Earth::~Earth() = default;
 
 
 void  Earth::InitializeObject(void)
@@ -71,8 +68,8 @@ void Earth::RenderObject(RenderModes renderMode)
 
     if (renderMode == RENDER_MODE_WIREFRAME)
     {
-        gluQuadricTexture(earth, hasTexture ? GL_TRUE : GL_FALSE);
-        gluQuadricDrawStyle(earth, GLU_LINE);
+        gluQuadricTexture(earth.get(), hasTexture ? GL_TRUE : GL_FALSE);
+        gluQuadricDrawStyle(earth.get(), GLU_LINE);
 
         if (hasTexture)
         {
@@ -84,19 +81,19 @@ void Earth::RenderObject(RenderModes renderMode)
             glDisable(GL_TEXTURE_2D);
         }
 
-        gluSphere(earth, GetObjectRadius(), 64, 64);
+        gluSphere(earth.get(), GetObjectRadius(), 64, 64);
 
         if (hasTexture)
         {
             glDisable(GL_TEXTURE_2D);
         }
 
-        gluQuadricDrawStyle(earth, GLU_FILL);
+        gluQuadricDrawStyle(earth.get(), GLU_FILL);
     }
     else
     {
-        gluQuadricTexture(earth, hasTexture ? GL_TRUE : GL_FALSE);
-        gluQuadricDrawStyle(earth, GLU_FILL);
+        gluQuadricTexture(earth.get(), hasTexture ? GL_TRUE : GL_FALSE);
+        gluQuadricDrawStyle(earth.get(), GLU_FILL);
 
         if (hasTexture)
         {
@@ -108,7 +105,7 @@ void Earth::RenderObject(RenderModes renderMode)
             glDisable(GL_TEXTURE_2D);
         }
 
-        gluSphere(earth, GetObjectRadius(), 64, 64);
+        gluSphere(earth.get(), GetObjectRadius(), 64, 64);
 
         if (hasTexture)
         {
@@ -147,4 +144,3 @@ GLboolean Earth::LoadTextures(void)
     texture = LoadTexture2D("assets/textures/earth_sm.bmp", true, false, true);
     return texture > 0;
 }
-

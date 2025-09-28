@@ -24,7 +24,7 @@ public:
     // 
     OrbitCamera();
     
-    ~OrbitCamera();
+    ~OrbitCamera() = default;
 
     
     // Accessor Methods

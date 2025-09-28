@@ -12,6 +12,7 @@
 #include "common/EOGL.h"
 
 // C++ Std Includes
+#include <memory>
 #include <string>
 
 // Class Includes
@@ -40,14 +41,15 @@ public:
     
     
 private:
-    
+    using QuadricPtr = std::unique_ptr<GLUquadric, void (*)(GLUquadric*)>;
+
     // Other Methods
     GLboolean LoadTextures(void);
     void InitializeObject(void);
     void InitializeMaterials(void);    
     
     GLuint texture;
-    GLUquadric* earth;
+    QuadricPtr earth{nullptr, gluDeleteQuadric};
     GLfloat m_rotationAngle;
     
 };
