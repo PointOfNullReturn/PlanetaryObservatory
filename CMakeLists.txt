@@ -22,6 +22,7 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/render/Axis.cpp
     src/render/OrbitCamera.cpp
     src/render/TextureLoader.cpp
+    src/render/Skybox.cpp
     src/render/camera.cpp
     src/scene/Earth.cpp
     src/scene/Light.cpp
@@ -63,3 +64,6 @@ endif()
 if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE GL_SILENCE_DEPRECATION)
 endif()
+
+enable_testing()
+add_subdirectory(tests)

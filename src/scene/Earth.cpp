@@ -141,6 +141,6 @@ void  Earth::InitializeMaterials(void)
 
 GLboolean Earth::LoadTextures(void)
 {
-    texture = LoadTexture2D("assets/textures/earth_sm.bmp", true, false, true);
+    texture = LoadTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true);
     return texture > 0;
 }
