@@ -1,41 +1,135 @@
 #include "scenegraph/components/AxisComponent.h"
 #include "scenegraph/SceneNode.h"
 
-void AxisComponent::onRender(SceneNode &node)
-{
-    if (!enabled) {
-        return;
-    }
+#include <algorithm>
+#include <cmath>
 
-    glPushMatrix();
+namespace {
 
-    glm::mat4 transform = node.getTransform();
-    glMultMatrixf(glm::value_ptr(transform));
+constexpr GLfloat kMinArrowLength = 0.2f;
+constexpr GLfloat kMinArrowWidth = 0.1f;
+constexpr GLfloat kLengthToArrowLength = 0.2f;
+constexpr GLfloat kLengthToArrowWidth = 0.08f;
 
-    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LINE_BIT);
-    glDisable(GL_LIGHTING);
-    glLineWidth(lineWidth);
+void drawXAxisArrow(GLfloat axisLength, GLfloat arrowLength, GLfloat arrowWidth) {
+  const GLfloat baseX = axisLength;
+  const GLfloat tipX = axisLength + arrowLength;
 
-    glBegin(GL_LINES);
+  glBegin(GL_TRIANGLE_FAN);
+  glVertex3f(tipX, 0.0f, 0.0f);
+  glVertex3f(baseX, arrowWidth, 0.0f);
+  glVertex3f(baseX, 0.0f, arrowWidth);
+  glVertex3f(baseX, -arrowWidth, 0.0f);
+  glVertex3f(baseX, 0.0f, -arrowWidth);
+  glVertex3f(baseX, arrowWidth, 0.0f);
+  glEnd();
 
-    // X axis (red)
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(length, 0.0f, 0.0f);
+  glBegin(GL_LINE_LOOP);
+  glVertex3f(tipX, 0.0f, 0.0f);
+  glVertex3f(baseX, arrowWidth, 0.0f);
+  glVertex3f(baseX, 0.0f, arrowWidth);
+  glVertex3f(baseX, -arrowWidth, 0.0f);
+  glVertex3f(baseX, 0.0f, -arrowWidth);
+  glEnd();
+}
 
-    // Y axis (green)
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, length, 0.0f);
+void drawYAxisArrow(GLfloat axisLength, GLfloat arrowLength, GLfloat arrowWidth) {
+  const GLfloat baseY = axisLength;
+  const GLfloat tipY = axisLength + arrowLength;
 
-    // Z axis (blue)
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, length);
+  glBegin(GL_TRIANGLE_FAN);
+  glVertex3f(0.0f, tipY, 0.0f);
+  glVertex3f(arrowWidth, baseY, 0.0f);
+  glVertex3f(0.0f, baseY, arrowWidth);
+  glVertex3f(-arrowWidth, baseY, 0.0f);
+  glVertex3f(0.0f, baseY, -arrowWidth);
+  glVertex3f(arrowWidth, baseY, 0.0f);
+  glEnd();
 
-    glEnd();
+  glBegin(GL_LINE_LOOP);
+  glVertex3f(0.0f, tipY, 0.0f);
+  glVertex3f(arrowWidth, baseY, 0.0f);
+  glVertex3f(0.0f, baseY, arrowWidth);
+  glVertex3f(-arrowWidth, baseY, 0.0f);
+  glVertex3f(0.0f, baseY, -arrowWidth);
+  glEnd();
+}
 
-    glPopAttrib();
+void drawZAxisArrow(GLfloat axisLength, GLfloat arrowLength, GLfloat arrowWidth) {
+  const GLfloat baseZ = axisLength;
+  const GLfloat tipZ = axisLength + arrowLength;
 
-    glPopMatrix();
+  glBegin(GL_TRIANGLE_FAN);
+  glVertex3f(0.0f, 0.0f, tipZ);
+  glVertex3f(arrowWidth, 0.0f, baseZ);
+  glVertex3f(0.0f, arrowWidth, baseZ);
+  glVertex3f(-arrowWidth, 0.0f, baseZ);
+  glVertex3f(0.0f, -arrowWidth, baseZ);
+  glVertex3f(arrowWidth, 0.0f, baseZ);
+  glEnd();
+
+  glBegin(GL_LINE_LOOP);
+  glVertex3f(0.0f, 0.0f, tipZ);
+  glVertex3f(arrowWidth, 0.0f, baseZ);
+  glVertex3f(0.0f, arrowWidth, baseZ);
+  glVertex3f(-arrowWidth, 0.0f, baseZ);
+  glVertex3f(0.0f, -arrowWidth, baseZ);
+  glEnd();
+}
+
+} // namespace
+
+void AxisComponent::onRender(SceneNode &node) {
+  if (!enabled) {
+    return;
+  }
+
+  const GLfloat axisLength = std::max(std::fabs(length), 0.0f);
+  if (axisLength <= 0.0f) {
+    return;
+  }
+
+  glPushMatrix();
+
+  const glm::mat4 transform = node.getTransform();
+  glMultMatrixf(glm::value_ptr(transform));
+
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LINE_BIT);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_CULL_FACE);
+  glLineWidth(lineWidth);
+
+  glBegin(GL_LINES);
+
+  glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+  glVertex3f(-axisLength, 0.0f, 0.0f);
+  glVertex3f(axisLength, 0.0f, 0.0f);
+
+  glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+  glVertex3f(0.0f, -axisLength, 0.0f);
+  glVertex3f(0.0f, axisLength, 0.0f);
+
+  glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+  glVertex3f(0.0f, 0.0f, -axisLength);
+  glVertex3f(0.0f, 0.0f, axisLength);
+
+  glEnd();
+
+  const GLfloat arrowLength =
+      std::max(axisLength * kLengthToArrowLength, kMinArrowLength);
+  const GLfloat arrowWidth =
+      std::max(axisLength * kLengthToArrowWidth, kMinArrowWidth);
+
+  glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+  drawXAxisArrow(axisLength, arrowLength, arrowWidth);
+
+  glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+  drawYAxisArrow(axisLength, arrowLength, arrowWidth);
+
+  glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+  drawZAxisArrow(axisLength, arrowLength, arrowWidth);
+
+  glPopAttrib();
+
+  glPopMatrix();
 }
