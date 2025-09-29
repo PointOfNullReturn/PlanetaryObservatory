@@ -3,8 +3,8 @@
 #include "utils/Log.h"
 #include "render/TextureLoader.h"
 #include "scenegraph/components/SphereMeshComponent.h"
-#include "scenegraph/components/TextureLayerComponent.h"
 #include "scenegraph/components/TransformComponent.h"
+#include "scenegraph/components/AxisComponent.h"
 #include "math/astromathlib.h"
 #include "common/EOPlanetaryConstants.h"
 
@@ -16,25 +16,35 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
 
   auto earthNode = std::make_unique<SceneNode>();
   earthNode->setName("Earth");
-  auto earthSphere = std::make_unique<SphereMeshComponent>();
-  earthSphere->radius = ASTRO_MATH_LIB::KMtoGU(EARTH_RADIUS_KM);
-  earthNode->addComponent(std::move(earthSphere));
   auto earthTextureLayers = std::make_unique<TextureLayerComponent>();
   earthTextureLayers->layers.push_back({LoadTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true), TextureBlendMode::None, 1.0f});
   earthNode->addComponent(std::move(earthTextureLayers));
+  auto earthSphere = std::make_unique<SphereMeshComponent>();
+  earthSphere->radius = ASTRO_MATH_LIB::KMtoGU(EARTH_RADIUS_KM);
+  earthNode->addComponent(std::move(earthSphere));
   this->earthNode = earthNode.get();
   m_sceneGraph.root()->addChild(std::move(earthNode));
 
   auto moonNode = std::make_unique<SceneNode>();
   moonNode->setName("Moon");
-  auto moonSphere = std::make_unique<SphereMeshComponent>();
-  moonSphere->radius = 0.50;
-  moonNode->addComponent(std::move(moonSphere));
   auto moonTextureLayers = std::make_unique<TextureLayerComponent>();
   moonTextureLayers->layers.push_back({LoadTexture2D("assets/textures/moon_sm.bmp", true, false), TextureBlendMode::None, 1.0f});
   moonNode->addComponent(std::move(moonTextureLayers));
+  auto moonSphere = std::make_unique<SphereMeshComponent>();
+  moonSphere->radius = 0.50;
+  moonNode->addComponent(std::move(moonSphere));
   this->moonNode = moonNode.get();
   m_sceneGraph.root()->addChild(std::move(moonNode));
+
+  auto axesNode = std::make_unique<SceneNode>();
+  axesNode->setName("Axes");
+  auto axisComponent = std::make_unique<AxisComponent>();
+  axisComponent->length = 10.0;
+  axisComponent->lineWidth = 2.0;
+  axisComponent->enabled = false;
+  axesNode->addComponent(std::move(axisComponent));
+  this->axesNode = axesNode.get();
+  m_sceneGraph.root()->addChild(std::move(axesNode));
 
   sceneCamera = std::make_shared<OrbitCamera>();
   skybox = std::make_unique<Skybox>();
@@ -42,14 +52,6 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   // TODO: Finish Lighting Object
   // ambientLight = std::make_unique<Light>("LIGHT0", GL_LIGHT0);
   InitializeScene();
-
-  // This all needs to go in a scene init function.
-  axes = std::make_unique<Axis>(10.0, 2.0, false);
-
-  if (axes->GetEnableAxes())
-    showAxes = true;
-  else
-    showAxes = false;
 
   m_currentlyAnimating = false;
 }
@@ -113,7 +115,11 @@ void Scene::SetRenderMode(RenderModes renderMode) {
 
 void Scene::SetShowAxes(GLboolean show) {
   showAxes = show;
-  axes->SetEnableAxes(showAxes);
+  if (axesNode) {
+    if (auto* axisComponent = axesNode->getComponent<AxisComponent>()) {
+      axisComponent->enabled = show;
+    }
+  }
 }
 
 void Scene::SetCurrentlyAnimating(GLboolean animating) {
@@ -132,7 +138,7 @@ void Scene::RenderScene(void) {
   }
 
   if (skybox) {
-    skybox->render();
+    // skybox->render();
   }
 
   glEnable(GL_LIGHT0);

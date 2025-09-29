@@ -4,12 +4,12 @@
 #include "common/EOGL.h"
 
 #include "common/EOGlobalEnums.h"
-#include "render/Axis.h"
 #include "render/OrbitCamera.h"
 #include "render/Skybox.h"
 #include "scene/Light.h"
 #include "scenegraph/SceneGraph.h"
 #include "scenegraph/SceneNode.h"
+#include "scenegraph/components/TextureLayerComponent.h"
 
 #include <memory>
 
@@ -48,6 +48,7 @@ private:
   SceneGraph& m_sceneGraph;
   SceneNode* earthNode = nullptr;
   SceneNode* moonNode = nullptr;
+  SceneNode* axesNode = nullptr;
 
   // TODO: Implement All Planetary Objects in an array
   // vector<PlanetaryObject*> planetaryObjects;    // List of Planetary Objects
@@ -67,7 +68,6 @@ private:
   GLboolean m_currentlyAnimating;
 
   GLboolean showAxes; // Whether or not to show the coordinate system axis
-  std::unique_ptr<Axis> axes; // Pointer to the instansiated axes class
 
   glm::vec4 ambientLightColor = {0.50, 0.50, 0.50, 1.0};
 

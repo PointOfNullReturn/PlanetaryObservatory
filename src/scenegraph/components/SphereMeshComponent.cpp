@@ -27,12 +27,14 @@ void SphereMeshComponent::onRender(SceneNode &node)
 
     if (renderMode == RENDER_MODE_WIREFRAME)
     {
+        gluQuadricTexture(quadric.get(), GL_TRUE);
         gluQuadricDrawStyle(quadric.get(), GLU_LINE);
         gluSphere(quadric.get(), radius, slices, stacks);
         gluQuadricDrawStyle(quadric.get(), GLU_FILL);
     }
     else
     {
+        gluQuadricTexture(quadric.get(), GL_TRUE);
         gluQuadricDrawStyle(quadric.get(), GLU_FILL);
         gluSphere(quadric.get(), radius, slices, stacks);
     }

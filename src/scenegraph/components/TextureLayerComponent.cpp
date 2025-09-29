@@ -34,5 +34,5 @@ void TextureLayerComponent::onRender(SceneNode &node)
     }
 
     // Disable texturing after all layers are processed
-    glDisable(GL_TEXTURE_2D);
+    // glDisable(GL_TEXTURE_2D);
 }
