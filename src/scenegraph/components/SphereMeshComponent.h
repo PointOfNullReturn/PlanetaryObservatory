@@ -4,6 +4,7 @@
 #include "scenegraph/components/Component.h"
 #include "common/EOGL.h"
 #include "common/EOGlobalEnums.h"
+#include "render/MeshBuilder.h"
 #include <memory>
 
 class SphereMeshComponent : public Component {
@@ -18,8 +19,7 @@ public:
     void onRender(SceneNode &node) override;
 
 private:
-    using QuadricPtr = std::unique_ptr<GLUquadric, void (*)(GLUquadric*)>;
-    QuadricPtr quadric{nullptr, gluDeleteQuadric};
+    std::unique_ptr<GLUSphere> quadric;
 };
 
 #endif //PLANETARY_OBSERVATORY_SCENEGRAPH_COMPONENTS_SPHEREMESHCOMPONENT_H
