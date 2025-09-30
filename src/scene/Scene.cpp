@@ -2,6 +2,7 @@
 
 #include "utils/Log.h"
 #include "render/TextureLoader.h"
+#include "render/TextureCache.h"
 #include "render/GlState.h"
 #include "scenegraph/components/SphereMeshComponent.h"
 #include "scenegraph/components/SkyboxComponent.h"
@@ -50,7 +51,7 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   auto earthNode = std::make_unique<SceneNode>();
   earthNode->setName("Earth");
   auto earthTextureLayers = std::make_unique<TextureLayerComponent>();
-  earthTextureLayers->layers.push_back({LoadTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true), TextureBlendMode::None, 1.0f});
+  earthTextureLayers->layers.push_back({GetTextureCache().getTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true), TextureBlendMode::None, 1.0f});
   earthNode->addComponent(std::move(earthTextureLayers));
   auto earthSphere = std::make_unique<SphereMeshComponent>();
   earthSphere->radius = ASTRO_MATH_LIB::KMtoGU(EARTH_RADIUS_KM);
@@ -61,7 +62,7 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   auto moonNode = std::make_unique<SceneNode>();
   moonNode->setName("Moon");
   auto moonTextureLayers = std::make_unique<TextureLayerComponent>();
-  moonTextureLayers->layers.push_back({LoadTexture2D("assets/textures/moon_sm.bmp", true, false), TextureBlendMode::None, 1.0f});
+  moonTextureLayers->layers.push_back({GetTextureCache().getTexture2D("assets/textures/moon_sm.bmp", true, false), TextureBlendMode::None, 1.0f});
   moonNode->addComponent(std::move(moonTextureLayers));
   auto moonSphere = std::make_unique<SphereMeshComponent>();
   moonSphere->radius = 0.50;

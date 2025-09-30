@@ -1,16 +1,15 @@
-#pragma once
+#ifndef PLANETARY_OBSERVATORY_RENDER_TEXTURELOADER_H
+#define PLANETARY_OBSERVATORY_RENDER_TEXTURELOADER_H
 
 #include "common/EOGL.h"
 
 #include <array>
 #include <string>
 
-// Loads an image file from disk and creates an OpenGL 2D texture. Returns 0 on
-// failure.
 GLuint LoadTexture2D(const std::string &path, bool generateMipmaps = true,
-                     bool flipVertically = true, bool flipHorizontally = false);
+                     bool flipVertically = false, bool flipHorizontally = false);
 
-// Loads a cubemap texture from 6 faces in order: right, left, top, bottom,
-// front, back. Returns 0 on failure.
 GLuint LoadCubemap(const std::array<std::string, 6> &facePaths,
-                   bool generateMipmaps = false);
+                   bool generateMipmaps = true);
+
+#endif // PLANETARY_OBSERVATORY_RENDER_TEXTURELOADER_H
