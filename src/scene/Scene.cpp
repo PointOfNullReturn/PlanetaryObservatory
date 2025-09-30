@@ -4,6 +4,8 @@
 #include "render/TextureLoader.h"
 #include "scenegraph/components/SphereMeshComponent.h"
 #include "scenegraph/components/SkyboxComponent.h"
+#include "scenegraph/components/DirectionalLightComponent.h"
+#include "scenegraph/components/GlobalLightingComponent.h"
 #include "scenegraph/components/TransformComponent.h"
 #include "scenegraph/components/AxisComponent.h"
 #include "math/astromathlib.h"
@@ -11,9 +13,33 @@
 
 #include <memory>
 #include <string>
+#include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/vec3.hpp>
 
 Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
+
+  auto lightingNode = std::make_unique<SceneNode>();
+  lightingNode->setName("Lighting");
+
+  auto globalLighting = std::make_unique<GlobalLightingComponent>();
+  auto &globalData = globalLighting->lighting();
+  globalData.ambientColor = ambientLightColor;
+  globalData.backgroundColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+  lightingNode->addComponent(std::move(globalLighting));
+
+  auto sunLight = std::make_unique<DirectionalLightComponent>();
+  auto &sunData = sunLight->light();
+  const glm::vec3 lightPosition = glm::vec3(light1Position);
+  const float lightLength = glm::length(lightPosition);
+  if (lightLength > 0.0f) {
+    sunData.direction = -lightPosition / lightLength;
+  }
+  sunData.diffuseColor = specularLightColor;
+  sunData.specularColor = specularLightColor;
+  lightingNode->addComponent(std::move(sunLight));
+
+  m_sceneGraph.root()->addChild(std::move(lightingNode));
 
   auto skyboxNode = std::make_unique<SceneNode>();
   skyboxNode->setName("Skybox");
@@ -93,12 +119,8 @@ void Scene::InitializeScene(void) {
 
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-  // Initialize Lighting
-  // LIGHT_0 - Ambient Light
-  glLightfv(GL_LIGHT0, GL_AMBIENT, glm::value_ptr(ambientLightColor));
-
-  // LIGHT_1 - Specular Light
-  glLightfv(GL_LIGHT1, GL_SPECULAR, glm::value_ptr(specularLightColor));
+  // Lighting configuration is handled by GlobalLightingComponent and
+  // DirectionalLightComponent instances on the scene graph.
 }
 
 // Accessor Methods
@@ -141,13 +163,6 @@ void Scene::RenderScene(void) {
   if (sceneCamera) {
     sceneCamera->Render();
   }
-
-  glEnable(GL_LIGHT0);
-
-  glPushMatrix();
-  glLightfv(GL_LIGHT1, GL_POSITION, glm::value_ptr(light1Position));
-  glEnable(GL_LIGHT1);
-  glPopMatrix();
 
   // The scene graph will handle the rendering of the objects
 }
