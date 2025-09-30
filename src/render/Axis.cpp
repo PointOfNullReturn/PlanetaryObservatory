@@ -3,12 +3,12 @@
 //  EarthObservatory
 //
 //  Created by Kevin Cox on 11/19/11.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
-
 
 // Class Includes
 #include "render/Axis.h"
+
+#include "render/GlState.h"
 
 #include <algorithm>
 
@@ -103,11 +103,11 @@ void Axis::Render(void)
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     
     // Diable All Lighting
-    glDisable(GL_LIGHTING);
-    glDisable(GL_CULL_FACE);
+    glstate::enableLighting(false);
+    glstate::enableCullFace(false);
     
     // Set the Line Width of the Axes
-    glLineWidth(axesLineWidth);
+    glstate::setLineWidth(static_cast<GLfloat>(axesLineWidth));
     
     const GLdouble arrowLength = std::max(axesLength * 0.2, 0.2);
     const GLdouble arrowWidth = std::max(axesLength * 0.08, 0.1);
@@ -154,10 +154,9 @@ void Axis::Render(void)
     glPopMatrix();
     
     // Enable Lighting
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_LIGHTING);
+    glstate::enableCullFace(true);
+    glstate::enableLighting(true);
     
     // Pop All Attribute Bits
     glPopAttrib();
-    
 }

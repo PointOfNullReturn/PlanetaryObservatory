@@ -2,6 +2,7 @@
 
 #include "utils/Log.h"
 #include "render/TextureLoader.h"
+#include "render/GlState.h"
 #include "scenegraph/components/SphereMeshComponent.h"
 #include "scenegraph/components/SkyboxComponent.h"
 #include "scenegraph/components/DirectionalLightComponent.h"
@@ -92,26 +93,26 @@ Scene::~Scene() {}
 void Scene::InitializeScene(void) {
   // Initialize Background Color
   // Set Background Color to Black
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glstate::setClearColor({0.0f, 0.0f, 0.0f, 1.0f});
 
   // Enable GL Features
   // Enable Line Smoothing
   glEnable(GL_LINE_SMOOTH_HINT);
 
   // Enable Depth Test
-  glEnable(GL_DEPTH_TEST);
+  glstate::enableDepthTest(true);
 
   // Enable Cull Face
-  glEnable(GL_CULL_FACE);
+  glstate::enableCullFace(true);
 
   // Enable Shading
   glShadeModel(GL_SMOOTH);
 
   // Enable Normalization
-  glEnable(GL_NORMALIZE);
+  glstate::enableNormalize(true);
 
   // Enable Lighting
-  glEnable(GL_LIGHTING);
+  glstate::enableLighting(true);
 
   // glEnable(GL_COLOR_MATERIAL);
 

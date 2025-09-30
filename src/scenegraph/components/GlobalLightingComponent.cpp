@@ -1,6 +1,7 @@
 #include "scenegraph/components/GlobalLightingComponent.h"
 
 #include "scenegraph/SceneNode.h"
+#include "render/GlState.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -8,20 +9,23 @@ void GlobalLightingComponent::onRender(SceneNode &node) {
   (void)node;
 
   if (!m_lighting.enableLighting) {
-    glDisable(GL_LIGHTING);
+    glstate::enableLighting(false);
     glDisable(ambientLightId);
     return;
   }
 
-  glEnable(GL_LIGHTING);
+  glstate::enableLighting(true);
   glEnable(ambientLightId);
 
   if (m_lighting.enableNormalization) {
-    glEnable(GL_NORMALIZE);
+    glstate::enableNormalize(true);
   }
 
-  glClearColor(m_lighting.backgroundColor.r, m_lighting.backgroundColor.g,
-               m_lighting.backgroundColor.b, m_lighting.backgroundColor.a);
+  if (!m_lighting.enableNormalization) {
+    glstate::enableNormalize(false);
+  }
+
+  glstate::setClearColor(m_lighting.backgroundColor);
 
   glLightfv(ambientLightId, GL_AMBIENT, glm::value_ptr(m_lighting.ambientColor));
 

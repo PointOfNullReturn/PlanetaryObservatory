@@ -1,6 +1,7 @@
 #include "scenegraph/components/DirectionalLightComponent.h"
 
 #include "scenegraph/SceneNode.h"
+#include "render/GlState.h"
 
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -27,7 +28,7 @@ void DirectionalLightComponent::onRender(SceneNode &node) {
     return;
   }
 
-  glEnable(GL_LIGHTING);
+  glstate::enableLighting(true);
   glEnable(lightId);
 
   const glm::mat4 transform = node.getTransform();

@@ -1,5 +1,6 @@
 #include "scenegraph/components/TextureLayerComponent.h"
 #include "scenegraph/SceneNode.h"
+#include "render/GlState.h"
 
 void TextureLayerComponent::onRender(SceneNode &node)
 {
@@ -25,8 +26,7 @@ void TextureLayerComponent::onRender(SceneNode &node)
                     // Example: glBlendFunc(GL_ONE, GL_ONE); // Adds colors
                     break;
                 case TextureBlendMode::Alpha:
-                    glEnable(GL_BLEND);
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glstate::enableBlend(true);
                     // For fixed function, alpha value might be part of the texture or vertex color
                     break;
             }
@@ -35,4 +35,5 @@ void TextureLayerComponent::onRender(SceneNode &node)
 
     // Disable texturing after all layers are processed
     // glDisable(GL_TEXTURE_2D);
+    glstate::enableBlend(false);
 }
