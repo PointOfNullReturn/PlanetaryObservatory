@@ -37,7 +37,11 @@ public:
     
     void ZoomIn(void);
     void ZoomOut(void);
-    
+
+    const glm::vec3 &GetPosition() const { return m_cameraPosition; }
+    const glm::vec3 &GetLookAt() const { return m_cameraLookAtPosition; }
+    const glm::vec3 &GetUp() const { return m_cameraNormal; }
+
 private:
     CameraModes m_cameraMode;
     

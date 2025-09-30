@@ -4,8 +4,10 @@
 #include "core/Layer.h"
 #include "scene/Scene.h"
 #include "scenegraph/SceneGraph.h"
-
+#include "render/RenderContext.h"
+#include "render/SceneRenderer.h"
 #include <memory>
+
 
 class Application;
 
@@ -29,9 +31,12 @@ private:
   Application *m_application = nullptr;
   std::unique_ptr<Scene> m_scene;
   std::unique_ptr<SceneGraph> m_sceneGraph;
+  std::unique_ptr<SceneRenderer> m_sceneRenderer;
   SceneNode *m_selectedNode = nullptr;
   double m_accumulator = 0.0;
+  double m_lastDeltaTime = 0.0;
   const double m_animationIntervalSeconds = 1.0 / 30.0;
+  RenderContext m_renderContext;
 };
 
 #endif

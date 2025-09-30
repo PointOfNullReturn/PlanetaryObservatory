@@ -24,6 +24,7 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/render/TextureLoader.cpp
     src/render/Skybox.cpp
     src/render/camera.cpp
+    src/render/SceneRenderer.cpp
     src/scenegraph/SceneGraph.cpp
     src/scenegraph/SceneNode.cpp
     src/scenegraph/components/CameraComponent.cpp

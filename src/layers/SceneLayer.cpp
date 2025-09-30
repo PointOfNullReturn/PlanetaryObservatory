@@ -4,6 +4,7 @@
 #include "common/EOGlobals.h"
 #include "core/Application.h"
 #include "math/astromathlib.h"
+#include "render/SceneRenderer.h"
 #include "scene/Scene.h"
 #include "scenegraph/SceneGraph.h"
 #include "scenegraph/components/CameraComponent.h"
@@ -23,6 +24,16 @@
 
 #include <imgui.h>
 
+namespace {
+
+glm::mat4 readMatrix(GLenum matrix) {
+  GLfloat raw[16] = {0.0f};
+  glGetFloatv(matrix, raw);
+  return glm::make_mat4(raw);
+}
+
+} // namespace
+
 SceneLayer::SceneLayer() = default;
 
 void SceneLayer::onAttach(Application &application) {
@@ -32,6 +43,7 @@ void SceneLayer::onAttach(Application &application) {
   m_scene = std::make_unique<Scene>(*m_sceneGraph);
   m_scene->SetRenderMode(RENDER_MODE_NORMAL);
   m_sceneGraph->attach();
+  m_sceneRenderer = std::make_unique<SceneRenderer>();
 
   int width = 0;
   int height = 0;
@@ -58,6 +70,7 @@ void SceneLayer::onDetach() {
     m_sceneGraph->detach();
   }
   m_scene.reset();
+  m_sceneRenderer.reset();
   m_sceneGraph.reset();
   m_application = nullptr;
 }
@@ -70,6 +83,8 @@ void SceneLayer::onUpdate(double deltaTime) {
     if (m_sceneGraph) {
     m_sceneGraph->update(deltaTime);
   }
+
+  m_lastDeltaTime = deltaTime;
 
   m_accumulator += deltaTime;
 
@@ -88,8 +103,16 @@ void SceneLayer::onRender() {
 
   m_scene->RenderScene();
 
-    if (m_sceneGraph) {
-    m_sceneGraph->render();
+  if (m_sceneGraph && m_sceneRenderer) {
+    m_renderContext.deltaTimeSeconds = m_lastDeltaTime;
+    m_renderContext.viewMatrix = readMatrix(GL_MODELVIEW_MATRIX);
+    m_renderContext.projectionMatrix = readMatrix(GL_PROJECTION_MATRIX);
+
+    if (auto camera = m_scene->GetCamera()) {
+      m_renderContext.cameraPosition = camera->GetPosition();
+    }
+
+    m_sceneRenderer->render(*m_sceneGraph, m_renderContext);
   }
 
   if (Log::kDebugLoggingEnabled) {
