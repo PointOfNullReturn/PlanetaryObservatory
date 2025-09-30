@@ -38,7 +38,7 @@ void DirectionalLightComponent::onRender(SceneNode &node) {
   glm::vec3 worldDirection = normalizeOrDefault(rotation * localDirection,
                                                 glm::vec3(0.0f, 0.0f, -1.0f));
 
-  const glm::vec4 glDirection(-worldDirection, 0.0f);
+  const glm::vec4 glDirection(worldDirection, 0.0f);
 
   const glm::vec4 diffuse = m_light.diffuseColor * m_light.intensity;
   const glm::vec4 specular = m_light.specularColor * m_light.intensity;
