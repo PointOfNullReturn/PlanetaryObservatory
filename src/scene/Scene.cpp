@@ -3,6 +3,7 @@
 #include "utils/Log.h"
 #include "render/TextureLoader.h"
 #include "scenegraph/components/SphereMeshComponent.h"
+#include "scenegraph/components/SkyboxComponent.h"
 #include "scenegraph/components/TransformComponent.h"
 #include "scenegraph/components/AxisComponent.h"
 #include "math/astromathlib.h"
@@ -13,6 +14,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
+
+  auto skyboxNode = std::make_unique<SceneNode>();
+  skyboxNode->setName("Skybox");
+  skyboxNode->addComponent(std::make_unique<SkyboxComponent>());
+  m_sceneGraph.root()->addChild(std::move(skyboxNode));
 
   auto earthNode = std::make_unique<SceneNode>();
   earthNode->setName("Earth");
@@ -47,7 +53,6 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   m_sceneGraph.root()->addChild(std::move(axesNode));
 
   sceneCamera = std::make_shared<OrbitCamera>();
-  skybox = std::make_unique<Skybox>();
 
   // TODO: Finish Lighting Object
   // ambientLight = std::make_unique<Light>("LIGHT0", GL_LIGHT0);
@@ -135,10 +140,6 @@ void Scene::RenderScene(void) {
 
   if (sceneCamera) {
     sceneCamera->Render();
-  }
-
-  if (skybox) {
-    // skybox->render();
   }
 
   glEnable(GL_LIGHT0);

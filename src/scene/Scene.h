@@ -5,7 +5,6 @@
 
 #include "common/EOGlobalEnums.h"
 #include "render/OrbitCamera.h"
-#include "render/Skybox.h"
 #include "scene/Light.h"
 #include "scenegraph/SceneGraph.h"
 #include "scenegraph/SceneNode.h"
@@ -13,7 +12,6 @@
 
 #include <memory>
 
-#include "render/Skybox.h"
 #include <glm/glm.hpp>
 
 class Scene {
@@ -76,7 +74,6 @@ private:
   glm::vec4 light1Position = {0.0, 0.0, 10.0, 1.0};
 
   std::shared_ptr<OrbitCamera> sceneCamera;
-  std::unique_ptr<Skybox> skybox;
 };
 
 #endif // PLANETARYOBSERVATORY_SCENE_H
