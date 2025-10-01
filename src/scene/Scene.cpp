@@ -96,30 +96,9 @@ void Scene::InitializeScene(void) {
   // Set Background Color to Black
   glstate::setClearColor({0.0f, 0.0f, 0.0f, 1.0f});
 
-  // Enable GL Features
-  // Enable Line Smoothing
-  glEnable(GL_LINE_SMOOTH_HINT);
-
-  // Enable Depth Test
+  // Core GL features configured via dedicated helpers.
   glstate::enableDepthTest(true);
-
-  // Enable Cull Face
   glstate::enableCullFace(true);
-
-  // Enable Shading
-  glShadeModel(GL_SMOOTH);
-
-  // Enable Normalization
-  glstate::enableNormalize(true);
-
-  // Enable Lighting
-  glstate::enableLighting(true);
-
-  // glEnable(GL_COLOR_MATERIAL);
-
-  // glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
   // Lighting configuration is handled by GlobalLightingComponent and
   // DirectionalLightComponent instances on the scene graph.
