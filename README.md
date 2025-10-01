@@ -1,9 +1,9 @@
 # PlanetaryObservatory
 
 PlanetaryObservatory is a C++ OpenGL viewer for a solar system scene. The project
-is actively evolving toward a component-driven scene graph with a modern
-renderer, blending the original fixed-function code with new infrastructure
-while the migration is underway.
+now renders exclusively through a shader-driven pipeline powered by a
+component-based scene graph, with only a handful of legacy GL state calls left to
+retire.
 
 ## Features
 
@@ -16,7 +16,7 @@ while the migration is underway.
 
 - CMake 3.16 or newer
 - C++23 compiler (Apple Clang, LLVM Clang, MSVC, or GCC)
-- OpenGL, GLU, and GLFW development packages installed on the system
+- OpenGL and GLFW development packages installed on the system
 
 ## Building
 
@@ -54,7 +54,8 @@ ctest --test-dir build
 
 ## Dependencies
 
-- GLFW & legacy OpenGL (system provided)
+- GLFW & OpenGL (system provided)
+- GLAD (vendored loader generated under `third_party/glad`)
 - stb_image (vendored)
 - Dear ImGui (vendored)
 - GLM (via CMake FetchContent)
