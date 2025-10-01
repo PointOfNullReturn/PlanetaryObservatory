@@ -1,7 +1,6 @@
 #ifndef PLANETARY_OBSERVATORY_SCENEGRAPH_COMPONENTS_GLOBALLIGHTINGCOMPONENT_H
 #define PLANETARY_OBSERVATORY_SCENEGRAPH_COMPONENTS_GLOBALLIGHTINGCOMPONENT_H
 
-#include "common/EOGL.h"
 #include "scenegraph/components/Component.h"
 
 #include <glm/vec4.hpp>
@@ -25,9 +24,7 @@ public:
   const LightingData &lighting() const { return m_lighting; }
   LightingData &lighting() { return m_lighting; }
 
-  /// OpenGL light slot used for the ambient term when applying legacy lighting.
-  GLenum ambientLightId = GL_LIGHT0;
-
+  /// Legacy hook retained for compatibility; performs no GL side effects.
   void onRender(SceneNode &node) override;
 
 private:

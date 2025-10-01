@@ -13,13 +13,24 @@
 #include "scenegraph/components/TextureLayerComponent.h"
 
 #include <glm/glm.hpp>
+#include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <algorithm>
 #include <array>
+#include <limits>
 
 namespace {
 constexpr int kMaxDirectionalLights = 4;
+
+glm::vec3 normalizeOrDefault(const glm::vec3 &vector,
+                             const glm::vec3 &fallback) {
+  const float length = glm::length(vector);
+  if (length <= std::numeric_limits<float>::epsilon()) {
+    return fallback;
+  }
+  return vector / length;
+}
 }
 
 SceneRenderer::SceneRenderer() {
@@ -62,7 +73,7 @@ void SceneRenderer::gatherLights(SceneNode &node) {
     applyGlobalLighting(*globalLighting);
   }
   if (auto *directional = node.getComponent<DirectionalLightComponent>()) {
-    applyDirectionalLight(*directional);
+    applyDirectionalLight(*directional, node);
   }
 
   for (auto &child : node.children()) {
@@ -77,15 +88,23 @@ void SceneRenderer::applyGlobalLighting(const GlobalLightingComponent &component
   m_globalLightingEnabled = data.enableLighting;
   m_ambientColor = data.ambientColor;
   glstate::setClearColor(data.backgroundColor);
-  glstate::enableNormalize(data.enableNormalization);
 }
 
-void SceneRenderer::applyDirectionalLight(const DirectionalLightComponent &component) {
+void SceneRenderer::applyDirectionalLight(const DirectionalLightComponent &component,
+                                         const SceneNode &node) {
   DirectionalLightData data;
   data.enabled = component.light().enabled;
-  data.direction = component.light().direction;
-  data.diffuse = component.light().diffuseColor;
-  data.specular = component.light().specularColor;
+  const glm::vec3 fallback(0.0f, 0.0f, -1.0f);
+  const glm::vec3 localDirection =
+      normalizeOrDefault(component.light().direction, fallback);
+  const glm::mat4 transform = node.getTransform();
+  const glm::mat3 rotation(transform);
+  const glm::vec3 worldDirection =
+      normalizeOrDefault(rotation * localDirection, fallback);
+  data.direction = worldDirection;
+  const float intensity = component.light().intensity;
+  data.diffuse = component.light().diffuseColor * intensity;
+  data.specular = component.light().specularColor * intensity;
   m_directionalLights.push_back(data);
 }
 

@@ -37,7 +37,8 @@ private:
   void renderNode(SceneNode &node, const RenderContext &context);
   void gatherLights(SceneNode &node);
   void applyGlobalLighting(const GlobalLightingComponent &component);
-  void applyDirectionalLight(const DirectionalLightComponent &component);
+  void applyDirectionalLight(const DirectionalLightComponent &component,
+                             const SceneNode &node);
   void renderSkybox(SkyboxComponent &component, const RenderContext &context);
   void renderSphere(SceneNode &node, SphereMeshComponent &mesh,
                     TextureLayerComponent *textures,

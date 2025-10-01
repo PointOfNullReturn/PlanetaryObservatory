@@ -1,7 +1,6 @@
 #ifndef PLANETARY_OBSERVATORY_SCENEGRAPH_COMPONENTS_DIRECTIONALLIGHTCOMPONENT_H
 #define PLANETARY_OBSERVATORY_SCENEGRAPH_COMPONENTS_DIRECTIONALLIGHTCOMPONENT_H
 
-#include "common/EOGL.h"
 #include "scenegraph/components/Component.h"
 
 #include <glm/vec3.hpp>
@@ -28,9 +27,6 @@ public:
   const LightData &light() const { return m_light; }
   /// Mutable access for editor tools.
   LightData &light() { return m_light; }
-
-  /// OpenGL light slot used when applying legacy lighting.
-  GLenum lightId = GL_LIGHT1;
 
   void onRender(SceneNode &node) override;
 

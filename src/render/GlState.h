@@ -26,27 +26,11 @@ inline void enableBlend(bool enable, GLenum src = GL_SRC_ALPHA,
   }
 }
 
-inline void enableLighting(bool enable) {
-  if (enable) {
-    glEnable(GL_LIGHTING);
-  } else {
-    glDisable(GL_LIGHTING);
-  }
-}
-
 inline void enableCullFace(bool enable) {
   if (enable) {
     glEnable(GL_CULL_FACE);
   } else {
     glDisable(GL_CULL_FACE);
-  }
-}
-
-inline void enableNormalize(bool enable) {
-  if (enable) {
-    glEnable(GL_NORMALIZE);
-  } else {
-    glDisable(GL_NORMALIZE);
   }
 }
 
