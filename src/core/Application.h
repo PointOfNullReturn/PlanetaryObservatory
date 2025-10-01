@@ -80,7 +80,6 @@ private:
   double m_lastFps = 0.0;
   std::string m_windowTitleBase;
   bool m_imguiEnabled = true;
-  bool m_showImGuiDemo = true;
   ApplicationMode m_mode = ApplicationMode::Edit;
 };
 

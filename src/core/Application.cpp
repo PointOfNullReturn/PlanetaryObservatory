@@ -178,10 +178,6 @@ int Application::run() {
     }
 
     if (m_imguiEnabled && m_mode == ApplicationMode::Edit) {
-      if (m_showImGuiDemo) {
-        ImGui::ShowDemoWindow(&m_showImGuiDemo);
-      }
-
       ImGui::Render();
       ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
     }
