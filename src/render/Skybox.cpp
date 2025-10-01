@@ -1,13 +1,62 @@
 #include "render/Skybox.h"
 
+#include "render/GlCapabilities.h"
 #include "render/TextureLoader.h"
 #include "utils/Log.h"
 
 #include <array>
+#include <cstddef>
 #include <string>
 
 namespace {
 constexpr GLfloat kSkyboxSize = 40.0f;
+
+struct SkyboxVertex {
+  GLfloat position[3];
+  GLfloat texCoord[3];
+};
+
+constexpr SkyboxVertex kSkyboxVertices[] = {
+    // +X
+    {{kSkyboxSize, -kSkyboxSize, -kSkyboxSize}, {1.0f, -1.0f, -1.0f}},
+    {{kSkyboxSize, -kSkyboxSize, kSkyboxSize}, {1.0f, -1.0f, 1.0f}},
+    {{kSkyboxSize, kSkyboxSize, kSkyboxSize}, {1.0f, 1.0f, 1.0f}},
+    {{kSkyboxSize, kSkyboxSize, -kSkyboxSize}, {1.0f, 1.0f, -1.0f}},
+    // -X
+    {{-kSkyboxSize, -kSkyboxSize, kSkyboxSize}, {-1.0f, -1.0f, 1.0f}},
+    {{-kSkyboxSize, -kSkyboxSize, -kSkyboxSize}, {-1.0f, -1.0f, -1.0f}},
+    {{-kSkyboxSize, kSkyboxSize, -kSkyboxSize}, {-1.0f, 1.0f, -1.0f}},
+    {{-kSkyboxSize, kSkyboxSize, kSkyboxSize}, {-1.0f, 1.0f, 1.0f}},
+    // +Y
+    {{-kSkyboxSize, kSkyboxSize, -kSkyboxSize}, {-1.0f, 1.0f, -1.0f}},
+    {{-kSkyboxSize, kSkyboxSize, kSkyboxSize}, {-1.0f, 1.0f, 1.0f}},
+    {{kSkyboxSize, kSkyboxSize, kSkyboxSize}, {1.0f, 1.0f, 1.0f}},
+    {{kSkyboxSize, kSkyboxSize, -kSkyboxSize}, {1.0f, 1.0f, -1.0f}},
+    // -Y
+    {{-kSkyboxSize, -kSkyboxSize, kSkyboxSize}, {-1.0f, -1.0f, 1.0f}},
+    {{kSkyboxSize, -kSkyboxSize, kSkyboxSize}, {1.0f, -1.0f, 1.0f}},
+    {{kSkyboxSize, -kSkyboxSize, -kSkyboxSize}, {1.0f, -1.0f, -1.0f}},
+    {{-kSkyboxSize, -kSkyboxSize, -kSkyboxSize}, {-1.0f, -1.0f, -1.0f}},
+    // +Z
+    {{-kSkyboxSize, -kSkyboxSize, kSkyboxSize}, {-1.0f, -1.0f, 1.0f}},
+    {{kSkyboxSize, -kSkyboxSize, kSkyboxSize}, {1.0f, -1.0f, 1.0f}},
+    {{kSkyboxSize, kSkyboxSize, kSkyboxSize}, {1.0f, 1.0f, 1.0f}},
+    {{-kSkyboxSize, kSkyboxSize, kSkyboxSize}, {-1.0f, 1.0f, 1.0f}},
+    // -Z
+    {{kSkyboxSize, -kSkyboxSize, -kSkyboxSize}, {1.0f, -1.0f, -1.0f}},
+    {{-kSkyboxSize, -kSkyboxSize, -kSkyboxSize}, {-1.0f, -1.0f, -1.0f}},
+    {{-kSkyboxSize, kSkyboxSize, -kSkyboxSize}, {-1.0f, 1.0f, -1.0f}},
+    {{kSkyboxSize, kSkyboxSize, -kSkyboxSize}, {1.0f, 1.0f, -1.0f}},
+};
+
+constexpr unsigned short kSkyboxIndices[] = {
+    0, 1, 2, 0, 2, 3,       // +X
+    4, 5, 6, 4, 6, 7,       // -X
+    8, 9, 10, 8, 10, 11,    // +Y
+    12, 13, 14, 12, 14, 15, // -Y
+    16, 17, 18, 16, 18, 19, // +Z
+    20, 21, 22, 20, 22, 23  // -Z
+};
 }
 
 Skybox::Skybox() {
@@ -19,109 +68,107 @@ Skybox::Skybox() {
   } else {
     Log::info("Skybox cubemap loaded");
   }
+  initializeBuffers();
 }
 
 Skybox::~Skybox() {
+  destroyBuffers();
   if (m_textureId != 0) {
     glDeleteTextures(1, &m_textureId);
     m_textureId = 0;
   }
 }
 
-bool Skybox::isLoaded() const { return m_textureId != 0; }
+Skybox::Skybox(Skybox &&other) noexcept {
+  *this = std::move(other);
+}
 
-void Skybox::render() const {
-  if (!isLoaded()) {
-    return;
+Skybox &Skybox::operator=(Skybox &&other) noexcept {
+  if (this == &other) {
+    return *this;
   }
 
-  GLfloat viewMatrix[16] = {0.0f};
-  glGetFloatv(GL_MODELVIEW_MATRIX, viewMatrix);
-  viewMatrix[12] = 0.0f;
-  viewMatrix[13] = 0.0f;
-  viewMatrix[14] = 0.0f;
+  destroyBuffers();
+  if (m_textureId != 0) {
+    glDeleteTextures(1, &m_textureId);
+  }
 
-  glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_DEPTH_BUFFER_BIT);
-  glDepthMask(GL_FALSE);
+  m_textureId = other.m_textureId;
+  m_vao = other.m_vao;
+  m_vbo = other.m_vbo;
+  m_ebo = other.m_ebo;
+  m_indexCount = other.m_indexCount;
+  m_useVertexArray = other.m_useVertexArray;
 
-  glPushMatrix();
-  glLoadMatrixf(viewMatrix);
+  other.m_textureId = 0;
+  other.m_vao = 0;
+  other.m_vbo = 0;
+  other.m_ebo = 0;
+  other.m_indexCount = 0;
+  other.m_useVertexArray = false;
 
-  glDisable(GL_LIGHTING);
-  glDisable(GL_CULL_FACE);
-  glEnable(GL_TEXTURE_CUBE_MAP);
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureId);
+  return *this;
+}
 
-  const GLfloat s = kSkyboxSize;
+bool Skybox::isLoaded() const { return m_textureId != 0; }
 
-  glBegin(GL_QUADS);
-  // +X (right)
-  glTexCoord3f(1.0f, -1.0f, -1.0f);
-  glVertex3f(s, -s, -s);
-  glTexCoord3f(1.0f, -1.0f, 1.0f);
-  glVertex3f(s, -s, s);
-  glTexCoord3f(1.0f, 1.0f, 1.0f);
-  glVertex3f(s, s, s);
-  glTexCoord3f(1.0f, 1.0f, -1.0f);
-  glVertex3f(s, s, -s);
+void Skybox::initializeBuffers() {
+  m_indexCount = static_cast<GLsizei>(std::size(kSkyboxIndices));
 
-  // -X (left)
-  glTexCoord3f(-1.0f, -1.0f, 1.0f);
-  glVertex3f(-s, -s, s);
-  glTexCoord3f(-1.0f, -1.0f, -1.0f);
-  glVertex3f(-s, -s, -s);
-  glTexCoord3f(-1.0f, 1.0f, -1.0f);
-  glVertex3f(-s, s, -s);
-  glTexCoord3f(-1.0f, 1.0f, 1.0f);
-  glVertex3f(-s, s, s);
+  m_useVertexArray = glSupportsVertexArrayObjects();
 
-  // +Y (top)
-  glTexCoord3f(-1.0f, 1.0f, -1.0f);
-  glVertex3f(-s, s, -s);
-  glTexCoord3f(-1.0f, 1.0f, 1.0f);
-  glVertex3f(-s, s, s);
-  glTexCoord3f(1.0f, 1.0f, 1.0f);
-  glVertex3f(s, s, s);
-  glTexCoord3f(1.0f, 1.0f, -1.0f);
-  glVertex3f(s, s, -s);
+  if (m_useVertexArray && m_vao == 0) {
+    glGenVertexArrays(1, &m_vao);
+  }
+  if (m_vbo == 0) {
+    glGenBuffers(1, &m_vbo);
+  }
+  if (m_ebo == 0) {
+    glGenBuffers(1, &m_ebo);
+  }
 
-  // -Y (bottom)
-  glTexCoord3f(-1.0f, -1.0f, 1.0f);
-  glVertex3f(-s, -s, s);
-  glTexCoord3f(1.0f, -1.0f, 1.0f);
-  glVertex3f(s, -s, s);
-  glTexCoord3f(1.0f, -1.0f, -1.0f);
-  glVertex3f(s, -s, -s);
-  glTexCoord3f(-1.0f, -1.0f, -1.0f);
-  glVertex3f(-s, -s, -s);
+  if (m_useVertexArray && m_vao != 0) {
+    glBindVertexArray(m_vao);
+  }
 
-  // +Z (front)
-  glTexCoord3f(-1.0f, -1.0f, 1.0f);
-  glVertex3f(-s, -s, s);
-  glTexCoord3f(1.0f, -1.0f, 1.0f);
-  glVertex3f(s, -s, s);
-  glTexCoord3f(1.0f, 1.0f, 1.0f);
-  glVertex3f(s, s, s);
-  glTexCoord3f(-1.0f, 1.0f, 1.0f);
-  glVertex3f(-s, s, s);
+  glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(kSkyboxVertices), kSkyboxVertices,
+               GL_STATIC_DRAW);
 
-  // -Z (back)
-  glTexCoord3f(1.0f, -1.0f, -1.0f);
-  glVertex3f(s, -s, -s);
-  glTexCoord3f(-1.0f, -1.0f, -1.0f);
-  glVertex3f(-s, -s, -s);
-  glTexCoord3f(-1.0f, 1.0f, -1.0f);
-  glVertex3f(-s, s, -s);
-  glTexCoord3f(1.0f, 1.0f, -1.0f);
-  glVertex3f(s, s, -s);
-  glEnd();
+  if (m_useVertexArray && m_vao != 0) {
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SkyboxVertex),
+                          reinterpret_cast<const void *>(offsetof(SkyboxVertex, position)));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SkyboxVertex),
+                          reinterpret_cast<const void *>(offsetof(SkyboxVertex, texCoord)));
+    glEnableVertexAttribArray(1);
+  }
 
-  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-  glDisable(GL_TEXTURE_CUBE_MAP);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(kSkyboxIndices),
+               kSkyboxIndices, GL_STATIC_DRAW);
 
-  glPopMatrix();
-  glPopAttrib();
+  if (m_useVertexArray && m_vao != 0) {
+    glBindVertexArray(0);
+  }
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void Skybox::destroyBuffers() {
+  if (m_useVertexArray && m_vao != 0) {
+    glDeleteVertexArrays(1, &m_vao);
+    m_vao = 0;
+  }
+  if (m_vbo != 0) {
+    glDeleteBuffers(1, &m_vbo);
+    m_vbo = 0;
+  }
+  if (m_ebo != 0) {
+    glDeleteBuffers(1, &m_ebo);
+    m_ebo = 0;
+  }
+  m_useVertexArray = false;
 }
 std::array<std::string, 6> Skybox::defaultFacePaths() {
   return {"assets/textures/skybox/space_right.ppm",

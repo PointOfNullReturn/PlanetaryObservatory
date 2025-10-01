@@ -3,31 +3,18 @@
 
 #include "common/EOGL.h"
 
-#include <memory>
+#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
-class GLUSphere;
+#include <vector>
 
-/// Utility for constructing simple meshes backed by GLU quadrics.
-class MeshBuilder {
-public:
-  static std::unique_ptr<GLUSphere> createSphere();
+struct MeshData {
+  std::vector<glm::vec3> positions;
+  std::vector<glm::vec3> normals;
+  std::vector<glm::vec2> texCoords;
+  std::vector<unsigned int> indices;
 };
 
-class GLUSphere {
-public:
-  explicit GLUSphere(GLUquadric *quadric);
-  ~GLUSphere();
-
-  GLUSphere(const GLUSphere &) = delete;
-  GLUSphere &operator=(const GLUSphere &) = delete;
-
-  GLUSphere(GLUSphere &&other) noexcept;
-  GLUSphere &operator=(GLUSphere &&other) noexcept;
-
-  GLUquadric *handle() const { return m_quadric; }
-
-private:
-  GLUquadric *m_quadric = nullptr;
-};
+MeshData buildSphere(float radius, int slices, int stacks);
 
 #endif // PLANETARY_OBSERVATORY_RENDER_MESHBUILDER_H

@@ -12,6 +12,9 @@ public:
 
   void onRender(SceneNode &node) override;
 
+  Skybox &cube() { return skybox; }
+  const Skybox &cube() const { return skybox; }
+
 private:
   Skybox skybox;
 };

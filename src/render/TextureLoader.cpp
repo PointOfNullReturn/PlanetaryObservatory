@@ -5,14 +5,67 @@
 
 #include "utils/Log.h"
 
+#include <GLFW/glfw3.h>
+#if defined(__APPLE__)
+#include <dlfcn.h>
+#endif
+
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <cstdint>
+#include <cstdio>
 #include <string>
+
+namespace {
+
+template <typename Proc>
+Proc loadProc(const char *name) {
+  if (glfwGetCurrentContext() != nullptr) {
+    if (auto proc = reinterpret_cast<Proc>(glfwGetProcAddress(name))) {
+      return proc;
+    }
+  }
+#if defined(__APPLE__)
+  if (auto proc = reinterpret_cast<Proc>(dlsym(RTLD_DEFAULT, name))) {
+    return proc;
+  }
+#endif
+  return nullptr;
+}
+
+void ensureTextureFunctionsLoaded() {
+  if (glad_glGenTextures == nullptr) {
+    glad_glGenTextures = loadProc<PFNGLGENTEXTURESPROC>("glGenTextures");
+  }
+  if (glad_glBindTexture == nullptr) {
+    glad_glBindTexture = loadProc<PFNGLBINDTEXTUREPROC>("glBindTexture");
+  }
+  if (glad_glTexImage2D == nullptr) {
+    glad_glTexImage2D = loadProc<PFNGLTEXIMAGE2DPROC>("glTexImage2D");
+  }
+  if (glad_glTexParameteri == nullptr) {
+    glad_glTexParameteri = loadProc<PFNGLTEXPARAMETERIPROC>("glTexParameteri");
+  }
+  if (glad_glGenerateMipmap == nullptr) {
+    glad_glGenerateMipmap = loadProc<PFNGLGENERATEMIPMAPPROC>("glGenerateMipmap");
+  }
+}
+
+} // namespace
 
 GLuint LoadTexture2D(const std::string &path, bool generateMipmaps,
                      bool flipVertically, bool flipHorizontally) {
   stbi_set_flip_vertically_on_load(flipVertically ? 1 : 0);
+
+  ensureTextureFunctionsLoaded();
+
+  if (glad_glGenTextures == nullptr || glad_glBindTexture == nullptr ||
+      glad_glTexImage2D == nullptr) {
+    Log::error("LoadTexture2D called before OpenGL was initialised; skipping " +
+               path);
+    return 0;
+  }
 
   int width = 0;
   int height = 0;
@@ -79,6 +132,19 @@ GLuint LoadTexture2D(const std::string &path, bool generateMipmaps,
 GLuint LoadCubemap(const std::array<std::string, 6> &facePaths,
                    bool generateMipmaps) {
   stbi_set_flip_vertically_on_load(0);
+
+  ensureTextureFunctionsLoaded();
+
+  std::fprintf(stderr, "LoadCubemap: glTexImage2D pointer = %p\n",
+               reinterpret_cast<void *>(glad_glTexImage2D));
+  Log::info(std::string("LoadCubemap: glTexImage2D pointer = ") +
+            std::to_string(reinterpret_cast<std::uintptr_t>(glad_glTexImage2D)));
+
+  if (glad_glGenTextures == nullptr || glad_glBindTexture == nullptr ||
+      glad_glTexImage2D == nullptr) {
+    Log::error("LoadCubemap called before OpenGL was initialised; aborting");
+    return 0;
+  }
 
   GLuint textureId = 0;
   glGenTextures(1, &textureId);

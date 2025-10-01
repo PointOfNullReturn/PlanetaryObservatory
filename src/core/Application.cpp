@@ -4,6 +4,7 @@
 #include "core/Layer.h"
 #include "utils/Log.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <backends/imgui_impl_glfw.h>
@@ -16,6 +17,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <cstdint>
 
 namespace {
 void errorCallback(int error, const char *description) {
@@ -63,6 +65,17 @@ void Application::initialize() {
 
   glfwMakeContextCurrent(m_window);
   glfwSwapInterval(m_specification.enableVsync ? 1 : 0);
+
+  if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+    glfwDestroyWindow(m_window);
+    m_window = nullptr;
+    glfwTerminate();
+    m_glfwInitialized = false;
+    throw std::runtime_error("Failed to initialize GLAD");
+  }
+
+  Log::info(std::string("GLAD initialised: glTexImage2D loaded = ") +
+            (glad_glTexImage2D != nullptr ? "true" : "false"));
 
   m_windowTitleBase = m_specification.name;
 

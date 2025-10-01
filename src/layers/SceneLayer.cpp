@@ -20,19 +20,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include <imgui.h>
-
-namespace {
-
-glm::mat4 readMatrix(GLenum matrix) {
-  GLfloat raw[16] = {0.0f};
-  glGetFloatv(matrix, raw);
-  return glm::make_mat4(raw);
-}
-
-} // namespace
 
 SceneLayer::SceneLayer() = default;
 
@@ -85,6 +74,7 @@ void SceneLayer::onUpdate(double deltaTime) {
   }
 
   m_lastDeltaTime = deltaTime;
+  m_renderContext.deltaTimeSeconds = deltaTime;
 
   m_accumulator += deltaTime;
 
@@ -101,16 +91,18 @@ void SceneLayer::onRender() {
     return;
   }
 
-  m_scene->RenderScene();
-
   if (m_sceneGraph && m_sceneRenderer) {
-    m_renderContext.deltaTimeSeconds = m_lastDeltaTime;
-    m_renderContext.viewMatrix = readMatrix(GL_MODELVIEW_MATRIX);
-    m_renderContext.projectionMatrix = readMatrix(GL_PROJECTION_MATRIX);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glm::mat4 viewMatrix(1.0f);
+    m_renderContext.cameraPosition = glm::vec3(0.0f);
     if (auto camera = m_scene->GetCamera()) {
+      viewMatrix = camera->GetViewMatrix();
       m_renderContext.cameraPosition = camera->GetPosition();
     }
+
+    m_renderContext.viewMatrix = viewMatrix;
+    m_renderContext.projectionMatrix = m_projectionMatrix;
 
     m_sceneRenderer->render(*m_sceneGraph, m_renderContext);
   }
@@ -215,10 +207,7 @@ void SceneLayer::onKey(int key, int scancode, int action, int mods) {
 void SceneLayer::updateProjection(int width, int height) {
   glViewport(0, 0, width, height);
 
-  glMatrixMode(GL_PROJECTION);
-  glm::mat4 projection = glm::perspective(glm::radians(50.0f), aspectRatio, 0.01f, 50.0f);
-  glLoadMatrixf(glm::value_ptr(projection));
-  glMatrixMode(GL_MODELVIEW);
+  m_projectionMatrix = glm::perspective(glm::radians(50.0f), aspectRatio, 0.01f, 50.0f);
 }
 
 void SceneLayer::handleCharacterInput(char key) {

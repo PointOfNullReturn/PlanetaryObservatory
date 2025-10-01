@@ -4,5 +4,5 @@
 
 void SkyboxComponent::onRender(SceneNode &node) {
   (void)node;
-  skybox.render();
+  // Rendering is handled by SceneRenderer once per frame.
 }

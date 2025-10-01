@@ -30,7 +30,6 @@ public:
   void SetCurrentlyAnimating(GLboolean animating);
 
   // Other Methods
-  void RenderScene(void);
   void UpdateScene(void);
   void InitializeScene(void);
   void HandleKeyboardInput(unsigned char key);

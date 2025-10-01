@@ -156,19 +156,6 @@ void Scene::SetCurrentlyAnimating(GLboolean animating) {
 }
 
 // Other Methods
-void Scene::RenderScene(void) {
-  // Clear the window and the depth buffer
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glLoadIdentity();
-
-  if (sceneCamera) {
-    sceneCamera->Render();
-  }
-
-  // The scene graph will handle the rendering of the objects
-}
-
 void Scene::UpdateScene(void) {
   // If currently animating, update all objects
   if (earthNode) {

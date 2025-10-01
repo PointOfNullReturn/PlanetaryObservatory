@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 OrbitCamera::OrbitCamera()
 {
@@ -25,11 +24,8 @@ OrbitCamera::OrbitCamera()
     CalculatePosition();
 }
 
-
-void OrbitCamera::Render(void)
-{
-    glm::mat4 view = glm::lookAt(m_cameraPosition, m_cameraLookAtPosition, m_cameraNormal);
-    glLoadMatrixf(glm::value_ptr(view));
+glm::mat4 OrbitCamera::GetViewMatrix() const {
+    return glm::lookAt(m_cameraPosition, m_cameraLookAtPosition, m_cameraNormal);
 }
 
 void OrbitCamera::OrbitLeft(void)

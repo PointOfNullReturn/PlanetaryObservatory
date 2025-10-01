@@ -1,35 +1,30 @@
 #include "scenegraph/components/TextureLayerComponent.h"
 #include "scenegraph/SceneNode.h"
-#include "render/GlState.h"
 
 void TextureLayerComponent::onRender(SceneNode &node)
 {
-    // Enable texturing
-    glEnable(GL_TEXTURE_2D);
+    (void)node;
+    // Rendering handled by SceneRenderer's shader path.
+}
 
-    // Iterate through layers and apply textures/blending
-    for (const auto& layer : layers) {
-        if (layer.textureId > 0) {
-            glBindTexture(GL_TEXTURE_2D, layer.textureId);
-
-            // Apply blending based on mode
-            switch (layer.blendMode) {
-                case TextureBlendMode::None:
-                    // No blending, just replace (default behavior)
-                    break;
-                case TextureBlendMode::Multiply:
-                    // Example placeholder: glBlendFunc(GL_DST_COLOR, GL_ZERO);
-                    glstate::enableBlend(true, GL_DST_COLOR, GL_ZERO);
-                    break;
-                case TextureBlendMode::Add:
-                    glstate::enableBlend(true, GL_ONE, GL_ONE);
-                    break;
-                case TextureBlendMode::Alpha:
-                    glstate::enableBlend(true);
-                    break;
-            }
-        }
+bool TextureLayerComponent::bindForShader(GLuint textureUnit) const
+{
+    if (layers.empty() || layers.front().textureId == 0) {
+        glActiveTexture(GL_TEXTURE0 + textureUnit);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0);
+        return false;
     }
 
-    glstate::enableBlend(false);
+    glActiveTexture(GL_TEXTURE0 + textureUnit);
+    glBindTexture(GL_TEXTURE_2D, layers.front().textureId);
+    glActiveTexture(GL_TEXTURE0);
+    return true;
+}
+
+void TextureLayerComponent::unbindFromShader(GLuint textureUnit) const
+{
+    glActiveTexture(GL_TEXTURE0 + textureUnit);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE0);
 }

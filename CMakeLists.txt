@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(PlanetaryObservatory LANGUAGES CXX)
+project(PlanetaryObservatory LANGUAGES C CXX)
 if(APPLE)
     if(EXISTS "/opt/homebrew/lib/cmake")
         list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew")
@@ -19,7 +19,6 @@ include(cmake/Warnings.cmake)
 
 set(PLANETARY_OBSERVATORY_SOURCES
     src/app/main.cpp
-    src/render/Axis.cpp
     src/render/OrbitCamera.cpp
     src/render/TextureLoader.cpp
     src/render/Skybox.cpp
@@ -27,6 +26,8 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/render/SceneRenderer.cpp
     src/render/TextureCache.cpp
     src/render/MeshBuilder.cpp
+    src/render/ShaderProgram.cpp
+    third_party/glad/src/glad.c
     src/scenegraph/SceneGraph.cpp
     src/scenegraph/SceneNode.cpp
     src/scenegraph/components/CameraComponent.cpp
@@ -55,6 +56,7 @@ po_enable_default_warnings(${PROJECT_NAME})
 set(PLANETARY_OBSERVATORY_PRIVATE_INCLUDE_DIRS
     src
     third_party/stb
+    third_party/glad/include
 )
 
 if(PLANETARY_OBSERVATORY_DEP_INCLUDE_DIRS)

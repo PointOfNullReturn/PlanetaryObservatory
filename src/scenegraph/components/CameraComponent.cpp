@@ -12,8 +12,4 @@ void CameraComponent::onDetach(SceneNode &) {}
 
 void CameraComponent::onUpdate(SceneNode &, double) {}
 
-void CameraComponent::onRender(SceneNode &) {
-  if (m_camera) {
-    m_camera->Render();
-  }
-}
+void CameraComponent::onRender(SceneNode &) {}

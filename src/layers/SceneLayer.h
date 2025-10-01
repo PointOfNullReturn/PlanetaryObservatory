@@ -37,6 +37,7 @@ private:
   double m_lastDeltaTime = 0.0;
   const double m_animationIntervalSeconds = 1.0 / 30.0;
   RenderContext m_renderContext;
+  glm::mat4 m_projectionMatrix{1.0f};
 };
 
 #endif

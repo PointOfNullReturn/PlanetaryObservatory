@@ -26,6 +26,9 @@ public:
     TextureLayerComponent() = default;
 
     void onRender(SceneNode &node) override;
+
+    bool bindForShader(GLuint textureUnit = 0) const;
+    void unbindFromShader(GLuint textureUnit = 0) const;
 };
 
 #endif //PLANETARYOBSERVATORY_SCENEGRAPH_COMPONENTS_TEXTURELAYERCOMPONENT_H

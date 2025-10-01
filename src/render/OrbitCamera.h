@@ -28,8 +28,6 @@ public:
     void SetRadius(GLfloat radius);
     GLfloat GetRadius(void) const;
 
-    void Render(void);
-    
     void OrbitLeft(void);
     void OrbitRight(void);
     void OrbitUp(void);
@@ -41,6 +39,7 @@ public:
     const glm::vec3 &GetPosition() const { return m_cameraPosition; }
     const glm::vec3 &GetLookAt() const { return m_cameraLookAtPosition; }
     const glm::vec3 &GetUp() const { return m_cameraNormal; }
+    glm::mat4 GetViewMatrix() const;
 
 private:
     CameraModes m_cameraMode;
