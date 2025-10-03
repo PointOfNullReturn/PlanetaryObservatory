@@ -100,8 +100,10 @@ void OrbitCamera::zoom(float deltaRadius) {
 
 void OrbitCamera::setRadius(float radius, bool snap) {
   m_targetRadius = std::clamp(radius, kMinRadius, kMaxRadius);
+  m_focus.preferredRadius = m_targetRadius;
   if (snap) {
     m_currentRadius = m_targetRadius;
+    m_currentFocus.preferredRadius = m_currentRadius;
     recalcPosition();
   }
 }
