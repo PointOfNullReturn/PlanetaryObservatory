@@ -81,6 +81,7 @@ private:
     OrbitCamera::Focus focus;
     float yawDegrees = 270.0f;
     float pitchDegrees = 0.0f;
+    SceneNode **targetNode = nullptr;
   };
 
   struct CameraPreset {
@@ -101,6 +102,8 @@ private:
   };
 
   OrbitCamera::Focus makeFocusForNode(const SceneNode *node, float radius) const;
+  void refreshAnchor(CameraAnchor &anchor);
+  void refreshAnchors();
   void applyCameraAnchor(const CameraAnchor &anchor, bool snap);
   void playCameraPreset(std::size_t index);
   void updateCameraPreset(double deltaSeconds);

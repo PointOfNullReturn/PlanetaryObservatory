@@ -320,11 +320,17 @@ void Scene::applyCameraAnchor(const CameraAnchor &anchor, bool snap) {
 
   m_activePreset.playing = false;
 
-  sceneCamera->setFocus(anchor.focus, snap);
+  OrbitCamera::Focus focus = anchor.focus;
+  if (anchor.targetNode != nullptr && *anchor.targetNode != nullptr) {
+    focus = makeFocusForNode(*anchor.targetNode, anchor.focus.preferredRadius);
+  }
+
+  sceneCamera->setFocus(focus, snap);
   sceneCamera->setAngles(anchor.yawDegrees, anchor.pitchDegrees, snap);
 }
 
 void Scene::UpdateCinematic(double deltaSeconds) {
+  refreshAnchors();
   updateCameraPreset(deltaSeconds);
   if (!m_activePreset.playing && sceneCamera) {
     sceneCamera->update(deltaSeconds);
@@ -385,4 +391,23 @@ void Scene::updateCameraPreset(double deltaSeconds) {
 
 float Scene::animationEase(float t) const {
   return easeInOut(std::clamp(t, 0.0f, 1.0f));
+}
+
+void Scene::refreshAnchor(CameraAnchor &anchor) {
+  if (anchor.targetNode != nullptr && *anchor.targetNode != nullptr) {
+    anchor.focus =
+        makeFocusForNode(*anchor.targetNode, anchor.focus.preferredRadius);
+  }
+}
+
+void Scene::refreshAnchors() {
+  refreshAnchor(earthAnchor);
+  refreshAnchor(moonAnchor);
+  refreshAnchor(barycenterAnchor);
+  for (auto &preset : m_cameraPresets) {
+    if (preset.targetNode != nullptr && *preset.targetNode != nullptr) {
+      preset.anchor.focus = makeFocusForNode(*preset.targetNode,
+                                             preset.anchor.focus.preferredRadius);
+    }
+  }
 }
