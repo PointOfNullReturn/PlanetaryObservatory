@@ -66,9 +66,9 @@ private:
 
   GLboolean showAxes; // Whether or not to show the coordinate system axis
 
-  glm::vec4 ambientLightColor = {0.50, 0.50, 0.50, 1.0};
+  glm::vec4 ambientLightColor = {0.18f, 0.18f, 0.18f, 1.0f};
 
-  glm::vec4 specularLightColor = {1.0, 1.0, 1.0, 1.0};
+  glm::vec4 specularLightColor = {0.7f, 0.7f, 0.7f, 1.0f};
 
   glm::vec4 light1Position = {0.0, 0.0, 10.0, 1.0};
 

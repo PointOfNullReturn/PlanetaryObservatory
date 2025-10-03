@@ -38,6 +38,7 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/scenegraph/components/SkyboxComponent.cpp
     src/scenegraph/components/DirectionalLightComponent.cpp
     src/scenegraph/components/GlobalLightingComponent.cpp
+    src/scenegraph/components/MaterialComponent.cpp
     src/scene/Earth.cpp
     src/scene/Light.cpp
     src/scene/Moon.cpp

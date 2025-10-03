@@ -8,6 +8,7 @@
 #include "scenegraph/components/DirectionalLightComponent.h"
 #include "scenegraph/components/GlobalLightingComponent.h"
 #include "scenegraph/components/AxisComponent.h"
+#include "scenegraph/components/MaterialComponent.h"
 #include "scenegraph/components/SkyboxComponent.h"
 #include "scenegraph/components/SphereMeshComponent.h"
 #include "scenegraph/components/TextureLayerComponent.h"
@@ -15,9 +16,11 @@
 #include <glm/glm.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <limits>
 
 namespace {
@@ -48,6 +51,58 @@ SceneRenderer::SceneRenderer() {
     Log::warn("SceneRenderer: skybox shader failed to load; background will "
               "not be rendered.");
   }
+}
+
+void SceneRenderer::cacheBasicUniformLocations() {
+  if (m_basicUniforms.initialized) {
+    return;
+  }
+
+  const GLuint programId = m_basicProgram.id();
+  m_basicUniforms.model = glGetUniformLocation(programId, "uModel");
+  m_basicUniforms.view = glGetUniformLocation(programId, "uView");
+  m_basicUniforms.projection = glGetUniformLocation(programId, "uProjection");
+  m_basicUniforms.cameraPos = glGetUniformLocation(programId, "uCameraPos");
+  m_basicUniforms.ambient = glGetUniformLocation(programId, "uAmbientColor");
+  m_basicUniforms.materialDiffuse =
+      glGetUniformLocation(programId, "uMaterialDiffuse");
+  m_basicUniforms.materialAmbientMix =
+      glGetUniformLocation(programId, "uMaterialAmbientMix");
+  m_basicUniforms.materialSpecularStrength =
+      glGetUniformLocation(programId, "uMaterialSpecularStrength");
+  m_basicUniforms.materialShininess =
+      glGetUniformLocation(programId, "uMaterialShininess");
+  m_basicUniforms.materialExposure =
+      glGetUniformLocation(programId, "uMaterialExposure");
+  m_basicUniforms.materialGamma =
+      glGetUniformLocation(programId, "uMaterialGamma");
+  m_basicUniforms.useTexture = glGetUniformLocation(programId, "uUseTexture");
+  m_basicUniforms.texture = glGetUniformLocation(programId, "uTexture");
+  m_basicUniforms.textureLayerCount =
+      glGetUniformLocation(programId, "uTextureLayerCount");
+  m_basicUniforms.textureLayers =
+      glGetUniformLocation(programId, "uTextureLayers");
+  m_basicUniforms.textureBlendModes =
+      glGetUniformLocation(programId, "uTextureBlendModes");
+  m_basicUniforms.textureBlendFactors =
+      glGetUniformLocation(programId, "uTextureBlendFactors");
+  m_basicUniforms.useVertexColor =
+      glGetUniformLocation(programId, "uUseVertexColor");
+  m_basicUniforms.enableLighting =
+      glGetUniformLocation(programId, "uEnableLighting");
+  m_basicUniforms.normalMatrix =
+      glGetUniformLocation(programId, "uNormalMatrix");
+  m_basicUniforms.lightCount =
+      glGetUniformLocation(programId, "uDirectionalLightCount");
+  m_basicUniforms.lightDirections =
+      glGetUniformLocation(programId, "uLightDirections");
+  m_basicUniforms.lightDiffuse =
+      glGetUniformLocation(programId, "uLightDiffuse");
+  m_basicUniforms.lightSpecular =
+      glGetUniformLocation(programId, "uLightSpecular");
+  m_basicUniforms.lightEnabled =
+      glGetUniformLocation(programId, "uLightEnabled");
+  m_basicUniforms.initialized = true;
 }
 
 void SceneRenderer::render(SceneGraph &sceneGraph, const RenderContext &context) {
@@ -182,12 +237,27 @@ void SceneRenderer::renderSphere(SceneNode &node, SphereMeshComponent &mesh,
                                  TextureLayerComponent *textures,
                                  const RenderContext &context,
                                  const glm::mat4 &modelMatrix) {
-  (void)node;
+  MaterialComponent::MaterialProperties materialProperties;
+  if (auto *material = node.getComponent<MaterialComponent>()) {
+    materialProperties = material->material();
+  }
 
-  const bool hasTexture =
-      textures != nullptr && textures->bindForShader(0);
+  std::array<GLint, TextureLayerComponent::kMaxLayers> textureUnits{};
+  std::array<GLint, TextureLayerComponent::kMaxLayers> blendModes{};
+  std::array<float, TextureLayerComponent::kMaxLayers> blendFactors{};
+  int layerCount = 0;
+  if (textures != nullptr) {
+    layerCount = textures->bindForShader(0, textureUnits, blendModes, blendFactors);
+  }
 
-  bindShaderUniforms(context, modelMatrix, glm::vec4(1.0f), hasTexture, 0,
+  bindShaderUniforms(context, modelMatrix, materialProperties.diffuseColor,
+                     materialProperties.specularStrength,
+                     materialProperties.shininess,
+                     materialProperties.ambientMix, materialProperties.exposure,
+                     materialProperties.gamma, layerCount,
+                     layerCount > 0 ? textureUnits.data() : nullptr,
+                     layerCount > 0 ? blendModes.data() : nullptr,
+                     layerCount > 0 ? blendFactors.data() : nullptr,
                      /*useVertexColor=*/false, m_globalLightingEnabled);
 
   if (mesh.renderMode == RENDER_MODE_WIREFRAME) {
@@ -201,7 +271,7 @@ void SceneRenderer::renderSphere(SceneNode &node, SphereMeshComponent &mesh,
   }
 
   if (textures != nullptr) {
-    textures->unbindFromShader(0);
+    textures->unbindFromShader(0, layerCount);
   }
 
   glUseProgram(0);
@@ -219,7 +289,9 @@ void SceneRenderer::renderAxes(SceneNode &node, AxisComponent &axes,
     return;
   }
 
-  bindShaderUniforms(context, modelMatrix, glm::vec4(1.0f), false, 0,
+  bindShaderUniforms(context, modelMatrix, glm::vec4(1.0f), 0.0f, 1.0f, 1.0f,
+                     1.0f, 1.0f,
+                     /*textureLayerCount=*/0, nullptr, nullptr, nullptr,
                      /*useVertexColor=*/true, /*enableLighting=*/false);
 
   glLineWidth(axes.lineWidth);
@@ -263,66 +335,101 @@ void SceneRenderer::renderNode(SceneNode &node, const RenderContext &context) {
   }
 }
 
-void SceneRenderer::bindShaderUniforms(const RenderContext &context,
-                                       const glm::mat4 &modelMatrix,
-                                       const glm::vec4 &materialColor,
-                                       bool useTexture, GLint textureUnit,
-                                       bool useVertexColor,
-                                       bool enableLighting) {
+void SceneRenderer::bindShaderUniforms(
+    const RenderContext &context, const glm::mat4 &modelMatrix,
+    const glm::vec4 &materialColor, float specularStrength, float shininess,
+    float ambientMix, float exposure, float gamma, int textureLayerCount,
+    const GLint *textureUnits, const GLint *textureBlendModes,
+    const float *textureBlendFactors, bool useVertexColor, bool enableLighting) {
   m_basicProgram.use();
+  cacheBasicUniformLocations();
 
-  const GLint uModel = glGetUniformLocation(m_basicProgram.id(), "uModel");
-  const GLint uView = glGetUniformLocation(m_basicProgram.id(), "uView");
-  const GLint uProjection =
-      glGetUniformLocation(m_basicProgram.id(), "uProjection");
-  const GLint uCameraPos =
-      glGetUniformLocation(m_basicProgram.id(), "uCameraPos");
-  const GLint uAmbient =
-      glGetUniformLocation(m_basicProgram.id(), "uAmbientColor");
-  const GLint uMaterial =
-      glGetUniformLocation(m_basicProgram.id(), "uMaterialDiffuse");
-  const GLint uUseTexture =
-      glGetUniformLocation(m_basicProgram.id(), "uUseTexture");
-  const GLint uTexture = glGetUniformLocation(m_basicProgram.id(), "uTexture");
-  const GLint uUseVertexColor =
-      glGetUniformLocation(m_basicProgram.id(), "uUseVertexColor");
-  const GLint uEnableLighting =
-      glGetUniformLocation(m_basicProgram.id(), "uEnableLighting");
-
-  glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-  glUniformMatrix4fv(uView, 1, GL_FALSE, glm::value_ptr(context.viewMatrix));
-  glUniformMatrix4fv(uProjection, 1, GL_FALSE,
+  if (m_basicUniforms.model >= 0) {
+    glUniformMatrix4fv(m_basicUniforms.model, 1, GL_FALSE,
+                       glm::value_ptr(modelMatrix));
+  }
+  if (m_basicUniforms.view >= 0) {
+    glUniformMatrix4fv(m_basicUniforms.view, 1, GL_FALSE,
+                       glm::value_ptr(context.viewMatrix));
+  }
+  if (m_basicUniforms.projection >= 0) {
+    glUniformMatrix4fv(m_basicUniforms.projection, 1, GL_FALSE,
                      glm::value_ptr(context.projectionMatrix));
-  glUniform3fv(uCameraPos, 1, glm::value_ptr(context.cameraPosition));
-  if (uAmbient >= 0) {
-    glUniform4fv(uAmbient, 1, glm::value_ptr(m_ambientColor));
   }
-  if (uMaterial >= 0) {
-    glUniform4fv(uMaterial, 1, glm::value_ptr(materialColor));
+  if (m_basicUniforms.cameraPos >= 0) {
+    glUniform3fv(m_basicUniforms.cameraPos, 1,
+                 glm::value_ptr(context.cameraPosition));
   }
-  if (uUseTexture >= 0) {
-    glUniform1i(uUseTexture, useTexture ? 1 : 0);
+  if (m_basicUniforms.ambient >= 0) {
+    glUniform4fv(m_basicUniforms.ambient, 1, glm::value_ptr(m_ambientColor));
   }
-  if (uTexture >= 0) {
-    glUniform1i(uTexture, textureUnit);
+  if (m_basicUniforms.materialDiffuse >= 0) {
+    glUniform4fv(m_basicUniforms.materialDiffuse, 1,
+                 glm::value_ptr(materialColor));
   }
-  if (uUseVertexColor >= 0) {
-    glUniform1i(uUseVertexColor, useVertexColor ? 1 : 0);
+  if (m_basicUniforms.materialAmbientMix >= 0) {
+    glUniform1f(m_basicUniforms.materialAmbientMix,
+                std::clamp(ambientMix, 0.0f, 1.0f));
   }
-  if (uEnableLighting >= 0) {
-    glUniform1i(uEnableLighting, enableLighting ? 1 : 0);
+  if (m_basicUniforms.materialSpecularStrength >= 0) {
+    glUniform1f(m_basicUniforms.materialSpecularStrength,
+                std::max(0.0f, specularStrength));
+  }
+  if (m_basicUniforms.materialShininess >= 0) {
+    glUniform1f(m_basicUniforms.materialShininess,
+                std::max(1.0f, shininess));
+  }
+  if (m_basicUniforms.materialExposure >= 0) {
+    glUniform1f(m_basicUniforms.materialExposure,
+                std::max(0.0f, exposure));
+  }
+  if (m_basicUniforms.materialGamma >= 0) {
+    glUniform1f(m_basicUniforms.materialGamma,
+                std::max(0.1f, gamma));
+  }
+  const bool hasTextureLayers = textureLayerCount > 0 && textureUnits != nullptr &&
+                                textureBlendModes != nullptr &&
+                                textureBlendFactors != nullptr;
+
+  if (m_basicUniforms.useTexture >= 0) {
+    glUniform1i(m_basicUniforms.useTexture, hasTextureLayers ? 1 : 0);
+  }
+  if (m_basicUniforms.texture >= 0) {
+    glUniform1i(m_basicUniforms.texture, hasTextureLayers ? textureUnits[0] : 0);
+  }
+  if (m_basicUniforms.textureLayerCount >= 0) {
+    glUniform1i(m_basicUniforms.textureLayerCount, textureLayerCount);
+  }
+  if (hasTextureLayers) {
+    if (m_basicUniforms.textureLayers >= 0) {
+      glUniform1iv(m_basicUniforms.textureLayers, textureLayerCount, textureUnits);
+    }
+    if (m_basicUniforms.textureBlendModes >= 0) {
+      glUniform1iv(m_basicUniforms.textureBlendModes, textureLayerCount,
+                   textureBlendModes);
+    }
+    if (m_basicUniforms.textureBlendFactors >= 0) {
+      glUniform1fv(m_basicUniforms.textureBlendFactors, textureLayerCount,
+                   textureBlendFactors);
+    }
+  }
+  if (m_basicUniforms.useVertexColor >= 0) {
+    glUniform1i(m_basicUniforms.useVertexColor, useVertexColor ? 1 : 0);
+  }
+  if (m_basicUniforms.enableLighting >= 0) {
+    glUniform1i(m_basicUniforms.enableLighting, enableLighting ? 1 : 0);
   }
 
-  const GLint uLightCount =
-      glGetUniformLocation(m_basicProgram.id(), "uDirectionalLightCount");
-  const GLint uLightDirections =
-      glGetUniformLocation(m_basicProgram.id(), "uLightDirections");
-  const GLint uLightDiffuse =
-      glGetUniformLocation(m_basicProgram.id(), "uLightDiffuse");
-  const GLint uLightSpecular =
-      glGetUniformLocation(m_basicProgram.id(), "uLightSpecular");
-  const GLint uLightEnabled =
-      glGetUniformLocation(m_basicProgram.id(), "uLightEnabled");
+  glm::mat3 normalMatrix(1.0f);
+  const glm::mat3 upperLeft(modelMatrix);
+  const float determinant = glm::determinant(upperLeft);
+  if (std::abs(determinant) > std::numeric_limits<float>::epsilon()) {
+    normalMatrix = glm::transpose(glm::inverse(upperLeft));
+  }
+  if (m_basicUniforms.normalMatrix >= 0) {
+    glUniformMatrix3fv(m_basicUniforms.normalMatrix, 1, GL_FALSE,
+                       glm::value_ptr(normalMatrix));
+  }
 
   const std::size_t clampedSize =
       enableLighting
@@ -344,22 +451,23 @@ void SceneRenderer::bindShaderUniforms(const RenderContext &context,
     enabled[i] = light.enabled ? 1 : 0;
   }
 
-  if (uLightCount >= 0) {
-    glUniform1i(uLightCount, count);
+  if (m_basicUniforms.lightCount >= 0) {
+    glUniform1i(m_basicUniforms.lightCount, count);
   }
-  if (uLightDirections >= 0) {
-    glUniform3fv(uLightDirections, kMaxDirectionalLights,
+  if (m_basicUniforms.lightDirections >= 0) {
+    glUniform3fv(m_basicUniforms.lightDirections, kMaxDirectionalLights,
                  reinterpret_cast<const GLfloat *>(directions.data()));
   }
-  if (uLightDiffuse >= 0) {
-    glUniform4fv(uLightDiffuse, kMaxDirectionalLights,
+  if (m_basicUniforms.lightDiffuse >= 0) {
+    glUniform4fv(m_basicUniforms.lightDiffuse, kMaxDirectionalLights,
                  reinterpret_cast<const GLfloat *>(diffuses.data()));
   }
-  if (uLightSpecular >= 0) {
-    glUniform4fv(uLightSpecular, kMaxDirectionalLights,
+  if (m_basicUniforms.lightSpecular >= 0) {
+    glUniform4fv(m_basicUniforms.lightSpecular, kMaxDirectionalLights,
                  reinterpret_cast<const GLfloat *>(speculars.data()));
   }
-  if (uLightEnabled >= 0) {
-    glUniform1iv(uLightEnabled, kMaxDirectionalLights, enabled.data());
+  if (m_basicUniforms.lightEnabled >= 0) {
+    glUniform1iv(m_basicUniforms.lightEnabled, kMaxDirectionalLights,
+                 enabled.data());
   }
 }

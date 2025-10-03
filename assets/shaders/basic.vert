@@ -12,6 +12,7 @@ attribute vec4 aColor;
 uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProjection;
+uniform mat3 uNormalMatrix;
 uniform bool uUseVertexColor;
 
 varying vec3 vNormal;
@@ -22,7 +23,7 @@ varying vec4 vColor;
 void main() {
   vec4 worldPos = uModel * vec4(aPosition, 1.0);
   vWorldPos = worldPos.xyz;
-  vNormal = mat3(uModel) * aNormal;
+  vNormal = normalize(uNormalMatrix * aNormal);
   vTexCoord = aTexCoord;
   vColor = uUseVertexColor ? aColor : vec4(1.0);
   gl_Position = uProjection * uView * worldPos;

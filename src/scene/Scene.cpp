@@ -10,6 +10,7 @@
 #include "scenegraph/components/GlobalLightingComponent.h"
 #include "scenegraph/components/TransformComponent.h"
 #include "scenegraph/components/AxisComponent.h"
+#include "scenegraph/components/MaterialComponent.h"
 #include "math/astromathlib.h"
 #include "common/EOPlanetaryConstants.h"
 
@@ -18,6 +19,7 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
 
@@ -39,6 +41,7 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   }
   sunData.diffuseColor = specularLightColor;
   sunData.specularColor = specularLightColor;
+  sunData.intensity = 0.75f;
   lightingNode->addComponent(std::move(sunLight));
 
   m_sceneGraph.root()->addChild(std::move(lightingNode));
@@ -50,6 +53,15 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
 
   auto earthNode = std::make_unique<SceneNode>();
   earthNode->setName("Earth");
+  auto earthMaterial = std::make_unique<MaterialComponent>();
+  auto &earthMaterialData = earthMaterial->material();
+  earthMaterialData.diffuseColor = glm::vec4(0.75f, 0.85f, 1.0f, 1.0f);
+  earthMaterialData.specularStrength = 0.1f;
+  earthMaterialData.shininess = 24.0f;
+  earthMaterialData.ambientMix = 0.55f;
+  earthMaterialData.exposure = 0.85f;
+  earthMaterialData.gamma = 2.3f;
+  earthNode->addComponent(std::move(earthMaterial));
   auto earthTextureLayers = std::make_unique<TextureLayerComponent>();
   earthTextureLayers->layers.push_back({GetTextureCache().getTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true), TextureBlendMode::None, 1.0f});
   earthNode->addComponent(std::move(earthTextureLayers));
@@ -61,6 +73,15 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
 
   auto moonNode = std::make_unique<SceneNode>();
   moonNode->setName("Moon");
+  auto moonMaterial = std::make_unique<MaterialComponent>();
+  auto &moonMaterialData = moonMaterial->material();
+  moonMaterialData.diffuseColor = glm::vec4(1.0f);
+  moonMaterialData.specularStrength = 0.02f;
+  moonMaterialData.shininess = 12.0f;
+  moonMaterialData.ambientMix = 0.55f;
+  moonMaterialData.exposure = 1.0f;
+  moonMaterialData.gamma = 2.2f;
+  moonNode->addComponent(std::move(moonMaterial));
   auto moonTextureLayers = std::make_unique<TextureLayerComponent>();
   moonTextureLayers->layers.push_back({GetTextureCache().getTexture2D("assets/textures/moon_sm.bmp", true, false), TextureBlendMode::None, 1.0f});
   moonNode->addComponent(std::move(moonTextureLayers));
