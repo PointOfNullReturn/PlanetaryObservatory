@@ -104,6 +104,18 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   earthNode->addComponent(std::move(earthMaterial));
   auto earthTextureLayers = std::make_unique<TextureLayerComponent>();
   earthTextureLayers->layers.push_back({GetTextureCache().getTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true), TextureBlendMode::None, 1.0f});
+
+  TextureLayer cloudLayer{};
+  cloudLayer.textureId = GetTextureCache().getTexture2D("assets/textures/earth_sm.bmp", true, false, true);
+  cloudLayer.blendMode = TextureBlendMode::Alpha;
+  cloudLayer.blendFactor = 0.35f;
+  cloudLayer.animateRotation = true;
+  cloudLayer.rotationSpeedDegPerSec = 1.2f;
+  cloudLayer.rotationOffsetDeg = 0.0f;
+  cloudLayer.animateScroll = true;
+  cloudLayer.scrollSpeed = glm::vec2(0.01f, 0.0f);
+  cloudLayer.scrollOffset = glm::vec2(0.0f);
+  earthTextureLayers->layers.push_back(cloudLayer);
   earthNode->addComponent(std::move(earthTextureLayers));
   auto earthSphere = std::make_unique<SphereMeshComponent>();
   earthSphere->radius = ASTRO_MATH_LIB::KMtoGU(EARTH_RADIUS_KM);

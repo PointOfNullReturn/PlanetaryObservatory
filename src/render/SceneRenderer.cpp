@@ -92,6 +92,10 @@ void SceneRenderer::cacheBasicUniformLocations() {
       glGetUniformLocation(programId, "uTextureBlendModes");
   m_basicUniforms.textureBlendFactors =
       glGetUniformLocation(programId, "uTextureBlendFactors");
+  m_basicUniforms.texRotation =
+      glGetUniformLocation(programId, "uTexRotationRad[0]");
+  m_basicUniforms.texScroll =
+      glGetUniformLocation(programId, "uTexScrollOffset[0]");
   m_basicUniforms.useVertexColor =
       glGetUniformLocation(programId, "uUseVertexColor");
   m_basicUniforms.enableLighting =
@@ -251,9 +255,11 @@ void SceneRenderer::renderSphere(SceneNode &node, SphereMeshComponent &mesh,
   std::array<GLint, TextureLayerComponent::kMaxLayers> textureUnits{};
   std::array<GLint, TextureLayerComponent::kMaxLayers> blendModes{};
   std::array<float, TextureLayerComponent::kMaxLayers> blendFactors{};
+  std::array<::TextureAnimationState, TextureLayerComponent::kMaxLayers> animStates{};
   int layerCount = 0;
   if (textures != nullptr) {
-    layerCount = textures->bindForShader(0, textureUnits, blendModes, blendFactors);
+    layerCount = textures->bindForShader(0, textureUnits, blendModes, blendFactors,
+                                         animStates);
   }
 
   bindShaderUniforms(context, modelMatrix, materialProperties.diffuseColor,
@@ -266,7 +272,8 @@ void SceneRenderer::renderSphere(SceneNode &node, SphereMeshComponent &mesh,
                      layerCount > 0 ? textureUnits.data() : nullptr,
                      layerCount > 0 ? blendModes.data() : nullptr,
                      layerCount > 0 ? blendFactors.data() : nullptr,
-                     /*useVertexColor=*/false, m_globalLightingEnabled);
+                     /*useVertexColor=*/false, m_globalLightingEnabled,
+                     layerCount > 0 ? animStates.data() : nullptr);
 
   if (mesh.renderMode == RENDER_MODE_WIREFRAME) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -300,7 +307,7 @@ void SceneRenderer::renderAxes(SceneNode &node, AxisComponent &axes,
   bindShaderUniforms(context, modelMatrix, glm::vec4(1.0f), 0.0f, 1.0f, 1.0f,
                      1.0f, 1.0f, glm::vec4(0.0f), 0.0f, 1.0f,
                      /*textureLayerCount=*/0, nullptr, nullptr, nullptr,
-                     /*useVertexColor=*/true, /*enableLighting=*/false);
+                     /*useVertexColor=*/true, /*enableLighting=*/false, nullptr);
 
   glLineWidth(axes.lineWidth);
   axes.draw();
@@ -349,7 +356,8 @@ void SceneRenderer::bindShaderUniforms(
     float ambientMix, float exposure, float gamma, const glm::vec4 &rimColor,
     float rimStrength, float rimExponent, int textureLayerCount,
     const GLint *textureUnits, const GLint *textureBlendModes,
-    const float *textureBlendFactors, bool useVertexColor, bool enableLighting) {
+    const float *textureBlendFactors, bool useVertexColor, bool enableLighting,
+    const TextureAnimationState *animStates) {
   m_basicProgram.use();
   cacheBasicUniformLocations();
 
@@ -408,6 +416,28 @@ void SceneRenderer::bindShaderUniforms(
     glUniform1f(m_basicUniforms.materialRimExponent,
                 std::max(0.1f, rimExponent));
   }
+
+  std::array<float, TextureLayerComponent::kMaxLayers> rotations{};
+  std::array<glm::vec2, TextureLayerComponent::kMaxLayers> scrolls{};
+  for (std::size_t i = 0; i < TextureLayerComponent::kMaxLayers; ++i) {
+    if (animStates != nullptr) {
+      rotations[i] = animStates[i].rotationRadians;
+      scrolls[i] = animStates[i].scroll;
+    } else {
+      rotations[i] = 0.0f;
+      scrolls[i] = glm::vec2(0.0f);
+    }
+  }
+
+  if (m_basicUniforms.texRotation >= 0) {
+    glUniform1fv(m_basicUniforms.texRotation, TextureLayerComponent::kMaxLayers,
+                 rotations.data());
+  }
+  if (m_basicUniforms.texScroll >= 0) {
+    glUniform2fv(m_basicUniforms.texScroll, TextureLayerComponent::kMaxLayers,
+                 reinterpret_cast<const GLfloat *>(scrolls.data()));
+  }
+
   const bool hasTextureLayers = textureLayerCount > 0 && textureUnits != nullptr &&
                                 textureBlendModes != nullptr &&
                                 textureBlendFactors != nullptr;

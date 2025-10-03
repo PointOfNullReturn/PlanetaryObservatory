@@ -3,10 +3,12 @@
 
 #include "render/RenderContext.h"
 #include "render/ShaderProgram.h"
+#include "scenegraph/components/TextureLayerComponent.h"
 
 #include <vector>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/mat2x2.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -18,6 +20,8 @@ class TextureLayerComponent;
 class SphereMeshComponent;
 class AxisComponent;
 class SkyboxComponent;
+
+struct TextureAnimationState;
 
 struct DirectionalLightData {
   bool enabled = false;
@@ -57,7 +61,7 @@ private:
                           const GLint *textureUnits,
                           const GLint *textureBlendModes,
                           const float *textureBlendFactors, bool useVertexColor,
-                          bool enableLighting);
+                          bool enableLighting, const TextureAnimationState *animStates);
   void cacheBasicUniformLocations();
 
   ShaderProgram m_basicProgram;
@@ -92,6 +96,8 @@ private:
     GLint textureLayers = -1;
     GLint textureBlendModes = -1;
     GLint textureBlendFactors = -1;
+    GLint texRotation = -1;
+    GLint texScroll = -1;
     GLint lightCount = -1;
     GLint lightDirections = -1;
     GLint lightDiffuse = -1;

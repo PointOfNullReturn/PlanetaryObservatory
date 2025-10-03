@@ -28,16 +28,27 @@ uniform sampler2D uTexture;
 uniform bool uUseTexture;
 uniform bool uUseVertexColor;
 uniform bool uEnableLighting;
+uniform vec2 uTexScrollOffset[kMaxTextureLayers];
+uniform float uTexRotationRad[kMaxTextureLayers];
 
 varying vec3 vNormal;
 varying vec3 vWorldPos;
 varying vec2 vTexCoord;
 varying vec4 vColor;
 
+mat2 rotationMatrix(float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+  return mat2(c, -s, s, c);
+}
+
 vec4 applyTextureLayers(vec4 baseColor) {
   vec4 result = baseColor;
   for (int i = 0; i < uTextureLayerCount; ++i) {
-    vec4 texColor = texture2D(uTextureLayers[i], vTexCoord);
+    vec2 uv = vTexCoord + uTexScrollOffset[i];
+    uv = rotationMatrix(uTexRotationRad[i]) * (uv - vec2(0.5)) + vec2(0.5);
+    uv = fract(uv);
+    vec4 texColor = texture2D(uTextureLayers[i], uv);
     int mode = uTextureBlendModes[i];
     float factor = clamp(uTextureBlendFactors[i], 0.0, 1.0);
 
