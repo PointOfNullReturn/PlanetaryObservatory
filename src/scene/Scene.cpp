@@ -98,6 +98,9 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   earthMaterialData.ambientMix = 0.55f;
   earthMaterialData.exposure = 0.85f;
   earthMaterialData.gamma = 2.3f;
+  earthMaterialData.rimColor = glm::vec4(0.2f, 0.4f, 1.0f, 1.0f);
+  earthMaterialData.rimStrength = 0.8f;
+  earthMaterialData.rimExponent = 2.5f;
   earthNode->addComponent(std::move(earthMaterial));
   auto earthTextureLayers = std::make_unique<TextureLayerComponent>();
   earthTextureLayers->layers.push_back({GetTextureCache().getTexture2D("assets/textures/world.200407.3x5400x2700.png", true, false, true), TextureBlendMode::None, 1.0f});
@@ -118,6 +121,9 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   moonMaterialData.ambientMix = 0.55f;
   moonMaterialData.exposure = 1.0f;
   moonMaterialData.gamma = 2.2f;
+  moonMaterialData.rimColor = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+  moonMaterialData.rimStrength = 0.2f;
+  moonMaterialData.rimExponent = 3.0f;
   moonNode->addComponent(std::move(moonMaterial));
   auto moonTextureLayers = std::make_unique<TextureLayerComponent>();
   moonTextureLayers->layers.push_back({GetTextureCache().getTexture2D("assets/textures/moon_sm.bmp", true, false), TextureBlendMode::None, 1.0f});

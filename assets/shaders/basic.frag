@@ -17,6 +17,9 @@ uniform float uMaterialSpecularStrength;
 uniform float uMaterialShininess;
 uniform float uMaterialExposure;
 uniform float uMaterialGamma;
+uniform vec4 uMaterialRimColor;
+uniform float uMaterialRimStrength;
+uniform float uMaterialRimExponent;
 uniform int uTextureLayerCount;
 uniform int uTextureBlendModes[kMaxTextureLayers];
 uniform float uTextureBlendFactors[kMaxTextureLayers];
@@ -87,6 +90,11 @@ void main() {
 
     color += diffuse + specular;
   }
+
+  float rimBase = clamp(1.0 - max(dot(normal, viewDir), 0.0), 0.0, 1.0);
+  float rimFactor = pow(rimBase, max(uMaterialRimExponent, 0.1));
+  vec3 rim = uMaterialRimColor.rgb * rimFactor * max(uMaterialRimStrength, 0.0);
+  color.rgb += rim;
 
   vec3 toneMapped = color.rgb;
   float exposure = max(uMaterialExposure, 0.0);

@@ -76,6 +76,12 @@ void SceneRenderer::cacheBasicUniformLocations() {
       glGetUniformLocation(programId, "uMaterialExposure");
   m_basicUniforms.materialGamma =
       glGetUniformLocation(programId, "uMaterialGamma");
+  m_basicUniforms.materialRimColor =
+      glGetUniformLocation(programId, "uMaterialRimColor");
+  m_basicUniforms.materialRimStrength =
+      glGetUniformLocation(programId, "uMaterialRimStrength");
+  m_basicUniforms.materialRimExponent =
+      glGetUniformLocation(programId, "uMaterialRimExponent");
   m_basicUniforms.useTexture = glGetUniformLocation(programId, "uUseTexture");
   m_basicUniforms.texture = glGetUniformLocation(programId, "uTexture");
   m_basicUniforms.textureLayerCount =
@@ -254,7 +260,9 @@ void SceneRenderer::renderSphere(SceneNode &node, SphereMeshComponent &mesh,
                      materialProperties.specularStrength,
                      materialProperties.shininess,
                      materialProperties.ambientMix, materialProperties.exposure,
-                     materialProperties.gamma, layerCount,
+                     materialProperties.gamma, materialProperties.rimColor,
+                     materialProperties.rimStrength,
+                     materialProperties.rimExponent, layerCount,
                      layerCount > 0 ? textureUnits.data() : nullptr,
                      layerCount > 0 ? blendModes.data() : nullptr,
                      layerCount > 0 ? blendFactors.data() : nullptr,
@@ -290,7 +298,7 @@ void SceneRenderer::renderAxes(SceneNode &node, AxisComponent &axes,
   }
 
   bindShaderUniforms(context, modelMatrix, glm::vec4(1.0f), 0.0f, 1.0f, 1.0f,
-                     1.0f, 1.0f,
+                     1.0f, 1.0f, glm::vec4(0.0f), 0.0f, 1.0f,
                      /*textureLayerCount=*/0, nullptr, nullptr, nullptr,
                      /*useVertexColor=*/true, /*enableLighting=*/false);
 
@@ -338,7 +346,8 @@ void SceneRenderer::renderNode(SceneNode &node, const RenderContext &context) {
 void SceneRenderer::bindShaderUniforms(
     const RenderContext &context, const glm::mat4 &modelMatrix,
     const glm::vec4 &materialColor, float specularStrength, float shininess,
-    float ambientMix, float exposure, float gamma, int textureLayerCount,
+    float ambientMix, float exposure, float gamma, const glm::vec4 &rimColor,
+    float rimStrength, float rimExponent, int textureLayerCount,
     const GLint *textureUnits, const GLint *textureBlendModes,
     const float *textureBlendFactors, bool useVertexColor, bool enableLighting) {
   m_basicProgram.use();
@@ -386,6 +395,18 @@ void SceneRenderer::bindShaderUniforms(
   if (m_basicUniforms.materialGamma >= 0) {
     glUniform1f(m_basicUniforms.materialGamma,
                 std::max(0.1f, gamma));
+  }
+  if (m_basicUniforms.materialRimColor >= 0) {
+    glUniform4fv(m_basicUniforms.materialRimColor, 1,
+                 glm::value_ptr(rimColor));
+  }
+  if (m_basicUniforms.materialRimStrength >= 0) {
+    glUniform1f(m_basicUniforms.materialRimStrength,
+                std::max(0.0f, rimStrength));
+  }
+  if (m_basicUniforms.materialRimExponent >= 0) {
+    glUniform1f(m_basicUniforms.materialRimExponent,
+                std::max(0.1f, rimExponent));
   }
   const bool hasTextureLayers = textureLayerCount > 0 && textureUnits != nullptr &&
                                 textureBlendModes != nullptr &&

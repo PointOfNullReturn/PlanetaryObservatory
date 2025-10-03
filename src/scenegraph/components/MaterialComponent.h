@@ -18,6 +18,9 @@ public:
     float ambientMix{1.0f};
     float exposure{1.0f};
     float gamma{2.2f};
+    glm::vec4 rimColor{0.0f, 0.0f, 0.0f, 1.0f};
+    float rimStrength{0.0f};
+    float rimExponent{2.0f};
   };
 
   MaterialComponent() = default;

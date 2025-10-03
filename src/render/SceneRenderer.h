@@ -52,7 +52,8 @@ private:
                           const glm::vec4 &materialColor,
                           float specularStrength, float shininess,
                           float ambientMix, float exposure, float gamma,
-                          int textureLayerCount,
+                          const glm::vec4 &rimColor, float rimStrength,
+                          float rimExponent, int textureLayerCount,
                           const GLint *textureUnits,
                           const GLint *textureBlendModes,
                           const float *textureBlendFactors, bool useVertexColor,
@@ -79,6 +80,9 @@ private:
     GLint materialShininess = -1;
     GLint materialExposure = -1;
     GLint materialGamma = -1;
+    GLint materialRimColor = -1;
+    GLint materialRimStrength = -1;
+    GLint materialRimExponent = -1;
     GLint useTexture = -1;
     GLint texture = -1;
     GLint useVertexColor = -1;
