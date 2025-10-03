@@ -19,8 +19,8 @@ include(cmake/Warnings.cmake)
 
 set(PLANETARY_OBSERVATORY_SOURCES
     src/app/main.cpp
-    src/render/OrbitCamera.cpp
     src/render/TextureLoader.cpp
+    src/render/OrbitCamera.cpp
     src/render/Skybox.cpp
     src/render/SceneRenderer.cpp
     src/render/TextureCache.cpp

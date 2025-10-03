@@ -11,6 +11,8 @@
 #include "scenegraph/components/TextureLayerComponent.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include <glm/glm.hpp>
 
@@ -33,6 +35,7 @@ public:
   void UpdateScene(void);
   void InitializeScene(void);
   void HandleKeyboardInput(unsigned char key);
+  void UpdateCinematic(double deltaSeconds);
 
   /// Returns the active orbit camera controlling the scene view.
   std::shared_ptr<OrbitCamera> GetCamera() { return sceneCamera; }
@@ -73,6 +76,41 @@ private:
   glm::vec4 light1Position = {0.0, 0.0, 10.0, 1.0};
 
   std::shared_ptr<OrbitCamera> sceneCamera;
+
+  struct CameraAnchor {
+    OrbitCamera::Focus focus;
+    float yawDegrees = 270.0f;
+    float pitchDegrees = 0.0f;
+  };
+
+  struct CameraPreset {
+    std::string name;
+    CameraAnchor anchor;
+    float transitionSeconds = 5.0f;
+    float holdSeconds = 1.5f;
+    SceneNode **targetNode = nullptr;
+  };
+
+  struct ActiveCameraPreset {
+    bool playing = false;
+    std::size_t index = 0;
+    float elapsedSeconds = 0.0f;
+    OrbitCamera::Focus startFocus{};
+    float startYaw = 270.0f;
+    float startPitch = 0.0f;
+  };
+
+  OrbitCamera::Focus makeFocusForNode(const SceneNode *node, float radius) const;
+  void applyCameraAnchor(const CameraAnchor &anchor, bool snap);
+  void playCameraPreset(std::size_t index);
+  void updateCameraPreset(double deltaSeconds);
+  float animationEase(float t) const;
+
+  CameraAnchor earthAnchor{};
+  CameraAnchor moonAnchor{};
+  CameraAnchor barycenterAnchor{};
+  std::vector<CameraPreset> m_cameraPresets;
+  ActiveCameraPreset m_activePreset;
 };
 
 #endif // PLANETARYOBSERVATORY_SCENE_H

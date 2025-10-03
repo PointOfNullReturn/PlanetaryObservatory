@@ -69,7 +69,9 @@ void SceneLayer::onUpdate(double deltaTime) {
     return;
   }
 
-    if (m_sceneGraph) {
+  m_scene->UpdateCinematic(deltaTime);
+
+  if (m_sceneGraph) {
     m_sceneGraph->update(deltaTime);
   }
 
@@ -97,8 +99,8 @@ void SceneLayer::onRender() {
     glm::mat4 viewMatrix(1.0f);
     m_renderContext.cameraPosition = glm::vec3(0.0f);
     if (auto camera = m_scene->GetCamera()) {
-      viewMatrix = camera->GetViewMatrix();
-      m_renderContext.cameraPosition = camera->GetPosition();
+      viewMatrix = camera->viewMatrix();
+      m_renderContext.cameraPosition = camera->position();
     }
 
     m_renderContext.viewMatrix = viewMatrix;
@@ -235,7 +237,7 @@ void SceneLayer::onImGuiRender() {
     ImGui::Text("Axes: %s", m_scene->GetShowAxes() ? "On" : "Off");
     const auto &camera = m_scene->GetCamera();
     ImGui::Text("Camera radius: %.2f",
-                camera ? camera->GetRadius() : 0.0f);
+                camera ? camera->radius() : 0.0f);
   }
 
   if (m_application != nullptr && m_application->isFpsDisplayed()) {

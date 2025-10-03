@@ -1,58 +1,74 @@
-//
-//  OrbitCamera.h
-//  EarthObservatory
-//
-//  Created by Kevin Cox on 11/22/11.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
-//
+#pragma once
 
-#ifndef PLANETARYOBSERVATORY_ORBITCAMERA_H
-#define PLANETARYOBSERVATORY_ORBITCAMERA_H
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
-#include "common/EOGL.h"
-#include "common/EOGlobalEnums.h"
-#include <glm/glm.hpp>
-
-static const GLfloat MIN_CAMERA_RADIUS = 2.0f;
-static const GLfloat MAX_CAMERA_RADIUS = 38.0f;
-
-class OrbitCamera
-{
+/// Orbit-style camera that orbits around a focus point with clamped yaw/pitch.
+class OrbitCamera {
 public:
-    OrbitCamera();
-    ~OrbitCamera() = default;
+  struct Focus {
+    glm::vec3 position{0.0f};
+    float preferredRadius{5.0f};
+  };
 
-    void ChangeLookAt(void);
+  OrbitCamera();
 
-    void SnapToPreset(int presetIndex);
-    void SetRadius(GLfloat radius);
-    GLfloat GetRadius(void) const;
+  /// Updates internal camera state for this frame.
+  void update(double deltaSeconds);
 
-    void OrbitLeft(void);
-    void OrbitRight(void);
-    void OrbitUp(void);
-    void OrbitDown(void);
-    
-    void ZoomIn(void);
-    void ZoomOut(void);
+  /// Sets the target focus the camera should orbit around.
+  void setFocus(const Focus &focus, bool snapInstantly = false);
 
-    const glm::vec3 &GetPosition() const { return m_cameraPosition; }
-    const glm::vec3 &GetLookAt() const { return m_cameraLookAtPosition; }
-    const glm::vec3 &GetUp() const { return m_cameraNormal; }
-    glm::mat4 GetViewMatrix() const;
+  /// Smoothly set yaw/pitch in degrees.
+  void setAngles(float yawDegrees, float pitchDegrees, bool snap = false);
+
+  /// Immediately snap to yaw/pitch.
+  void snapAngles(float yawDegrees, float pitchDegrees);
+
+  /// Adjust yaw/pitch incrementally (e.g. from input).
+  void orbit(float deltaYawDegrees, float deltaPitchDegrees);
+
+  /// Adjust radius incrementally.
+  void zoom(float deltaRadius);
+
+  /// Directly set orbit radius.
+  void setRadius(float radius, bool snap = false);
+
+  /// Returns the current orbit radius.
+  float radius() const { return m_currentRadius; }
+
+  glm::mat4 viewMatrix() const;
+  glm::vec3 position() const { return m_position; }
+  glm::vec3 target() const { return m_focus.position; }
+  glm::vec3 focusPosition() const { return m_currentFocus.position; }
+  float yawDegrees() const { return m_currentYawDeg; }
+  float pitchDegrees() const { return m_currentPitchDeg; }
+  glm::vec3 up() const;
+
+  /// Controls for interpolation behaviour.
+  void setLerpSpeed(float positionSpeed, float angleSpeed, float radiusSpeed);
+  void setPitchLimits(float minPitchDegrees, float maxPitchDegrees);
 
 private:
-    CameraModes m_cameraMode;
-    
-    GLfloat m_cameraRadius;
-    
-    GLfloat m_cameraOrbitAngle;
-    GLfloat m_cameraPitchAngle;
-    
-    glm::vec3 m_cameraPosition;
-    glm::vec3 m_cameraLookAtPosition;
-    glm::vec3 m_cameraNormal;
-    
-    void CalculatePosition(void);
+  void recalcPosition();
+
+  Focus m_focus{};
+
+  float m_currentYawDeg = 270.0f;
+  float m_currentPitchDeg = 0.0f;
+  float m_currentRadius = 5.0f;
+
+  float m_targetYawDeg = m_currentYawDeg;
+  float m_targetPitchDeg = m_currentPitchDeg;
+  float m_targetRadius = m_currentRadius;
+
+  float m_minPitchDeg = -89.0f;
+  float m_maxPitchDeg = 89.0f;
+
+  float m_angleLerpSpeed = 6.0f;   // degrees per second responsiveness
+  float m_radiusLerpSpeed = 6.0f;  // units per second responsiveness
+  float m_focusLerpSpeed = 4.0f;   // units per second responsiveness
+
+  glm::vec3 m_position{0.0f};
+  Focus m_currentFocus{};
 };
-#endif // PLANETARYOBSERVATORY_ORBITCAMERA_H

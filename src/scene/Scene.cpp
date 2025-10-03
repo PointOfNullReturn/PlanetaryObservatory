@@ -16,12 +16,49 @@
 
 #include <memory>
 #include <string>
+#include <cmath>
+#include <algorithm>
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
+namespace {
+float easeInOut(float t) {
+  return t * t * (3.0f - 2.0f * t);
+}
+
+float deltaAngle(float fromDeg, float toDeg) {
+  float diff = std::fmod(toDeg - fromDeg, 360.0f);
+  if (diff > 180.0f) {
+    diff -= 360.0f;
+  } else if (diff < -180.0f) {
+    diff += 360.0f;
+  }
+  return diff;
+}
+
+float lerpAngle(float fromDeg, float toDeg, float t) {
+  return fromDeg + deltaAngle(fromDeg, toDeg) * t;
+}
+}
+
 Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
+
+  earthAnchor.focus.position = glm::vec3(0.0f);
+  earthAnchor.focus.preferredRadius = 8.0f;
+  earthAnchor.yawDegrees = 270.0f;
+  earthAnchor.pitchDegrees = 0.0f;
+
+  moonAnchor.focus.position = glm::vec3(0.0f);
+  moonAnchor.focus.preferredRadius = 12.0f;
+  moonAnchor.yawDegrees = 120.0f;
+  moonAnchor.pitchDegrees = 5.0f;
+
+  barycenterAnchor.focus.position = glm::vec3(0.0f);
+  barycenterAnchor.focus.preferredRadius = 10.0f;
+  barycenterAnchor.yawDegrees = 210.0f;
+  barycenterAnchor.pitchDegrees = 15.0f;
 
   auto lightingNode = std::make_unique<SceneNode>();
   lightingNode->setName("Lighting");
@@ -101,7 +138,18 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   this->axesNode = axesNode.get();
   m_sceneGraph.root()->addChild(std::move(axesNode));
 
+  earthAnchor.focus = makeFocusForNode(this->earthNode, earthAnchor.focus.preferredRadius);
+  moonAnchor.focus = makeFocusForNode(this->moonNode, moonAnchor.focus.preferredRadius);
+  barycenterAnchor.focus = makeFocusForNode(nullptr, barycenterAnchor.focus.preferredRadius);
+
+  m_cameraPresets = {
+      {"Blue Marble Approach", earthAnchor, 6.0f, 2.0f, &this->earthNode},
+      {"Lunar Flyby", CameraAnchor{makeFocusForNode(this->moonNode, 12.0f), 135.0f, 10.0f}, 7.0f, 2.0f, &this->moonNode},
+      {"Earthrise", CameraAnchor{makeFocusForNode(this->moonNode, 15.0f), 240.0f, 12.0f}, 8.0f, 3.0f, &this->moonNode}}
+  ;
+
   sceneCamera = std::make_shared<OrbitCamera>();
+  applyCameraAnchor(earthAnchor, true);
 
   // TODO: Finish Lighting Object
   // ambientLight = std::make_unique<Light>("LIGHT0", GL_LIGHT0);
@@ -170,6 +218,18 @@ void Scene::UpdateScene(void) {
 
 void Scene::HandleKeyboardInput(unsigned char key) {
   switch (key) {
+  case 'e':
+    applyCameraAnchor(earthAnchor, false);
+    break;
+
+  case 'm':
+    applyCameraAnchor(moonAnchor, false);
+    break;
+
+  case 'b':
+    applyCameraAnchor(barycenterAnchor, false);
+    break;
+
 
   // Scene Edit Helper Keys
   // Show Wireframe
@@ -189,38 +249,48 @@ void Scene::HandleKeyboardInput(unsigned char key) {
     break;
 
   // Preset views along world axes
-  case '1': // +X
-    sceneCamera->SnapToPreset(0);
+  case '1': // Preset 0
+    playCameraPreset(0);
     break;
 
-  case '2': // -X
-    sceneCamera->SnapToPreset(1);
+  case '2': // Preset 1
+    playCameraPreset(1);
     break;
 
-  case '3': // +Y
-    sceneCamera->SnapToPreset(2);
+  case '3': // Preset 2
+    playCameraPreset(2);
     break;
 
   case '4': // -Y
-    sceneCamera->SnapToPreset(3);
+    applyCameraAnchor(moonAnchor, false);
     break;
 
   case '5': // +Z
-    sceneCamera->SnapToPreset(4);
+    applyCameraAnchor(barycenterAnchor, false);
     break;
 
   case '6': // -Z
-    sceneCamera->SnapToPreset(5);
+    applyCameraAnchor(earthAnchor, false);
+    break;
+
+  case 'p':
+  case 'P':
+    if (!m_cameraPresets.empty()) {
+      std::size_t next = (m_activePreset.playing ? (m_activePreset.index + 1) : 0) % m_cameraPresets.size();
+      playCameraPreset(next);
+    }
     break;
 
   // Move Closer
   case '+':
-    sceneCamera->ZoomIn();
+    m_activePreset.playing = false;
+    sceneCamera->zoom(-0.5f);
     break;
 
   // Move Back
   case '-':
-    sceneCamera->ZoomOut();
+    m_activePreset.playing = false;
+    sceneCamera->zoom(0.5f);
     break;
   default:
     if (Log::kDebugLoggingEnabled) {
@@ -229,4 +299,90 @@ void Scene::HandleKeyboardInput(unsigned char key) {
     }
     break;
   }
+}
+
+
+OrbitCamera::Focus Scene::makeFocusForNode(const SceneNode *node, float radius) const {
+  OrbitCamera::Focus focus{};
+  if (node != nullptr) {
+    focus.position = node->getTransform()[3];
+  } else {
+    focus.position = glm::vec3(0.0f);
+  }
+  focus.preferredRadius = radius;
+  return focus;
+}
+
+void Scene::applyCameraAnchor(const CameraAnchor &anchor, bool snap) {
+  if (!sceneCamera) {
+    return;
+  }
+
+  m_activePreset.playing = false;
+
+  sceneCamera->setFocus(anchor.focus, snap);
+  sceneCamera->setAngles(anchor.yawDegrees, anchor.pitchDegrees, snap);
+}
+
+void Scene::UpdateCinematic(double deltaSeconds) {
+  updateCameraPreset(deltaSeconds);
+  if (!m_activePreset.playing && sceneCamera) {
+    sceneCamera->update(deltaSeconds);
+  }
+}
+
+void Scene::playCameraPreset(std::size_t index) {
+  if (!sceneCamera || index >= m_cameraPresets.size()) {
+    return;
+  }
+
+  auto &preset = m_cameraPresets[index];
+  if (preset.targetNode != nullptr && *preset.targetNode != nullptr) {
+    preset.anchor.focus =
+        makeFocusForNode(*preset.targetNode, preset.anchor.focus.preferredRadius);
+  }
+
+  m_activePreset.playing = true;
+  m_activePreset.index = index;
+  m_activePreset.elapsedSeconds = 0.0f;
+  m_activePreset.startFocus.position = sceneCamera->focusPosition();
+  m_activePreset.startFocus.preferredRadius = sceneCamera->radius();
+  m_activePreset.startYaw = sceneCamera->yawDegrees();
+  m_activePreset.startPitch = sceneCamera->pitchDegrees();
+}
+
+void Scene::updateCameraPreset(double deltaSeconds) {
+  if (!m_activePreset.playing || !sceneCamera || m_cameraPresets.empty()) {
+    return;
+  }
+
+  const auto &preset = m_cameraPresets[m_activePreset.index];
+  const float duration = std::max(0.01f, preset.transitionSeconds);
+  const float hold = std::max(0.0f, preset.holdSeconds);
+
+  m_activePreset.elapsedSeconds += static_cast<float>(deltaSeconds);
+  const float t = std::clamp(m_activePreset.elapsedSeconds / duration, 0.0f, 1.0f);
+  const float eased = animationEase(t);
+
+  glm::vec3 focusPos = m_activePreset.startFocus.position * (1.0f - eased) +
+                       preset.anchor.focus.position * eased;
+  float radius = m_activePreset.startFocus.preferredRadius * (1.0f - eased) +
+                 preset.anchor.focus.preferredRadius * eased;
+  const float yaw = lerpAngle(m_activePreset.startYaw, preset.anchor.yawDegrees, eased);
+  const float pitch = lerpAngle(m_activePreset.startPitch, preset.anchor.pitchDegrees, eased);
+
+  OrbitCamera::Focus focus{};
+  focus.position = focusPos;
+  focus.preferredRadius = radius;
+  sceneCamera->setFocus(focus, true);
+  sceneCamera->snapAngles(yaw, pitch);
+
+  if (t >= 1.0f && m_activePreset.elapsedSeconds >= duration + hold) {
+    m_activePreset.playing = false;
+    applyCameraAnchor(preset.anchor, true);
+  }
+}
+
+float Scene::animationEase(float t) const {
+  return easeInOut(std::clamp(t, 0.0f, 1.0f));
 }
