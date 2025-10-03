@@ -138,6 +138,8 @@ Scene::Scene(SceneGraph& sceneGraph) : m_sceneGraph(sceneGraph) {
   this->axesNode = axesNode.get();
   m_sceneGraph.root()->addChild(std::move(axesNode));
 
+  earthAnchor.targetNode = &this->earthNode;
+  moonAnchor.targetNode = &this->moonNode;
   earthAnchor.focus = makeFocusForNode(this->earthNode, earthAnchor.focus.preferredRadius);
   moonAnchor.focus = makeFocusForNode(this->moonNode, moonAnchor.focus.preferredRadius);
   barycenterAnchor.focus = makeFocusForNode(nullptr, barycenterAnchor.focus.preferredRadius);
@@ -203,21 +205,42 @@ void Scene::SetCurrentlyAnimating(GLboolean animating) {
   m_currentlyAnimating = animating;
 }
 
+void Scene::ToggleTimeLapse() {
+  m_timeLapseEnabled = !m_timeLapseEnabled;
+}
+
+void Scene::SetTimeLapseEnabled(bool enabled) {
+  m_timeLapseEnabled = enabled;
+}
+
+void Scene::SetTimeLapseHold(bool enabled) {
+  m_timeLapseHoldActive = enabled;
+}
+
+void Scene::SetTimeLapseFactor(float factor) {
+  m_timeLapseFactor = std::clamp(factor, 1.0f, 100.0f);
+}
+
 // Other Methods
 void Scene::UpdateScene(void) {
+  const float speed = IsTimeLapseActive() ? m_timeLapseFactor : 1.0f;
   // If currently animating, update all objects
   if (earthNode) {
     auto transform = earthNode->getComponent<TransformComponent>();
-    transform->rotation.y += 0.05f;
+    transform->rotation.y += 0.05f * speed;
   }
   if (moonNode) {
     auto transform = moonNode->getComponent<TransformComponent>();
-    transform->rotation.y += 0.008f;
+    transform->rotation.y += 0.008f * speed;
   }
 }
 
 void Scene::HandleKeyboardInput(unsigned char key) {
   switch (key) {
+  case 't':
+    ToggleTimeLapse();
+    break;
+
   case 'e':
     applyCameraAnchor(earthAnchor, false);
     break;
@@ -292,6 +315,14 @@ void Scene::HandleKeyboardInput(unsigned char key) {
     m_activePreset.playing = false;
     sceneCamera->zoom(0.5f);
     break;
+
+  case '[':
+    SetTimeLapseFactor(m_timeLapseFactor - 1.0f);
+    break;
+
+  case ']':
+    SetTimeLapseFactor(m_timeLapseFactor + 1.0f);
+    break;
   default:
     if (Log::kDebugLoggingEnabled) {
       Log::debug(std::string("Unhandled Keyboard Key: ") +
@@ -331,9 +362,10 @@ void Scene::applyCameraAnchor(const CameraAnchor &anchor, bool snap) {
 
 void Scene::UpdateCinematic(double deltaSeconds) {
   refreshAnchors();
-  updateCameraPreset(deltaSeconds);
+  const float speed = IsTimeLapseActive() ? m_timeLapseFactor : 1.0f;
+  updateCameraPreset(deltaSeconds * speed);
   if (!m_activePreset.playing && sceneCamera) {
-    sceneCamera->update(deltaSeconds);
+    sceneCamera->update(deltaSeconds * speed);
   }
 }
 
@@ -342,6 +374,7 @@ void Scene::playCameraPreset(std::size_t index) {
     return;
   }
 
+  refreshAnchors();
   auto &preset = m_cameraPresets[index];
   if (preset.targetNode != nullptr && *preset.targetNode != nullptr) {
     preset.anchor.focus =

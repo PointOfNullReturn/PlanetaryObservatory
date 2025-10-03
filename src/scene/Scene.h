@@ -37,6 +37,14 @@ public:
   void HandleKeyboardInput(unsigned char key);
   void UpdateCinematic(double deltaSeconds);
 
+  void ToggleTimeLapse();
+  void SetTimeLapseEnabled(bool enabled);
+  void SetTimeLapseHold(bool enabled);
+  void SetTimeLapseFactor(float factor);
+  bool IsTimeLapseEnabled() const { return m_timeLapseEnabled; }
+  bool IsTimeLapseActive() const { return m_timeLapseEnabled || m_timeLapseHoldActive; }
+  float TimeLapseFactor() const { return m_timeLapseFactor; }
+
   /// Returns the active orbit camera controlling the scene view.
   std::shared_ptr<OrbitCamera> GetCamera() { return sceneCamera; }
   /// Returns the active orbit camera controlling the scene view.
@@ -76,6 +84,9 @@ private:
   glm::vec4 light1Position = {0.0, 0.0, 10.0, 1.0};
 
   std::shared_ptr<OrbitCamera> sceneCamera;
+  bool m_timeLapseEnabled = false;
+  bool m_timeLapseHoldActive = false;
+  float m_timeLapseFactor = 10.0f;
 
   struct CameraAnchor {
     OrbitCamera::Focus focus;

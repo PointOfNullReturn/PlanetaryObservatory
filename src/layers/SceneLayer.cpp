@@ -181,6 +181,21 @@ void SceneLayer::onKey(int key, int scancode, int action, int mods) {
       m_scene->SetCurrentlyAnimating(!m_scene->GetCurrentlyAnimating());
       handleCharacterInput('a');
       return;
+    case GLFW_KEY_LEFT_SHIFT:
+    case GLFW_KEY_RIGHT_SHIFT:
+      m_scene->SetTimeLapseHold(true);
+      return;
+    default:
+      break;
+    }
+  }
+
+  if (action == GLFW_RELEASE) {
+    switch (key) {
+    case GLFW_KEY_LEFT_SHIFT:
+    case GLFW_KEY_RIGHT_SHIFT:
+      m_scene->SetTimeLapseHold(false);
+      return;
     default:
       break;
     }
@@ -238,6 +253,8 @@ void SceneLayer::onImGuiRender() {
     const auto &camera = m_scene->GetCamera();
     ImGui::Text("Camera radius: %.2f",
                 camera ? camera->radius() : 0.0f);
+    ImGui::Text("Time-lapse: %s (x%.1f)",
+                m_scene->IsTimeLapseActive() ? "On" : "Off", m_scene->TimeLapseFactor());
   }
 
   if (m_application != nullptr && m_application->isFpsDisplayed()) {
@@ -304,6 +321,7 @@ void SceneLayer::onImGuiRender() {
   ImGui::SeparatorText("Controls");
   ImGui::Text("Tab: toggle edit mode");
   ImGui::Text("F: toggle FPS");
+  ImGui::Text("Shift: hold time-lapse (toggle with T, adjust with [/] )");
 
   ImGui::End();
 }
