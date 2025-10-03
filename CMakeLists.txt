@@ -22,7 +22,6 @@ set(PLANETARY_OBSERVATORY_SOURCES
     src/render/OrbitCamera.cpp
     src/render/TextureLoader.cpp
     src/render/Skybox.cpp
-    src/render/camera.cpp
     src/render/SceneRenderer.cpp
     src/render/TextureCache.cpp
     src/render/MeshBuilder.cpp
